@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import Navbar from '@/components/Navbar/Navbar';
-import type { Employee } from '@/lib/types';
+import React, { useState } from "react";
+import Sidebar from "../components/Sidebar";
+import Navbar from "@/components/Navbar/Navbar";
+import type { Employee } from "@/lib/types";
+import EmployeeCard from "@/components/EmployeeCard";
 
 export default function Home() {
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [selectedFilters, setSelectedFilters] = useState({
-    company: 'all',
-    department: 'all'
+    company: "all",
+    department: "all",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewType, setViewType] = useState<'grid' | 'list' | 'kanban'>('grid');
+  const [viewType, setViewType] = useState<"grid" | "list" | "kanban">("grid");
   const itemsPerPage = 10;
 
   // Sidebar handlers
@@ -21,30 +22,30 @@ export default function Home() {
     setCurrentPage(1); // Reset to first page when filtering
   };
 
-  const handleFilterUpdate = (filterType: 'company' | 'department', value: string) => {
-    setSelectedFilters(prev => ({
+  const handleFilterUpdate = (
+    filterType: "company" | "department",
+    value: string
+  ) => {
+    setSelectedFilters((prev) => ({
       ...prev,
-      [filterType]: value
+      [filterType]: value,
     }));
   };
 
   // Navbar handlers
   const handleSearch = (searchTerm: string) => {
-    console.log('Search:', searchTerm);
-    // Add search logic here
+    console.log("Search:", searchTerm);
   };
 
   const handleNavbarFilterChange = (filters: Record<string, any>) => {
-    console.log('Navbar Filters:', filters);
-    // Add navbar filter logic here
+    console.log("Navbar Filters:", filters);
   };
 
   const handleGroupByChange = (groupBy: string) => {
-    console.log('Group By:', groupBy);
-    // Add group by logic here
+    console.log("Group By:", groupBy);
   };
 
-  const handleViewTypeChange = (newViewType: 'grid' | 'list' | 'kanban') => {
+  const handleViewTypeChange = (newViewType: "grid" | "list" | "kanban") => {
     setViewType(newViewType);
   };
 
@@ -53,18 +54,15 @@ export default function Home() {
   };
 
   const handleNewEmployee = () => {
-    console.log('New Employee');
-    // Add new employee logic here
+    console.log("New Employee");
   };
 
   const handleExport = () => {
-    console.log('Export');
-    // Add export logic here
+    console.log("Export");
   };
 
   const handleSettings = () => {
-    console.log('Settings');
-    // Add settings logic here
+    console.log("Settings");
   };
 
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
@@ -97,7 +95,43 @@ export default function Home() {
           onSettings={handleSettings}
         />
 
-
+        {/* Employee List */}
+        <div className="p-6 overflow-y-auto flex-1">
+          {filteredEmployees.length > 0 ? (
+            <div
+              className={
+                viewType === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                  : "flex flex-col gap-4"
+              }
+            >
+              {filteredEmployees
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                .map((emp) => {
+                  const info = emp.user.general_info;
+                  return (
+                    <EmployeeCard
+                      key={emp.id}
+                      id={emp.id}  
+                      full_name={info.full_name}
+                      job_position={info.job_position}
+                      work_email={info.work_email}
+                      work_phone={info.work_phone}
+                      image={info.image}
+                      tags={info.tags}
+                    />
+                  );
+                })}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center mt-10">
+              No employees found.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

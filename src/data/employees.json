@@ -17,15 +17,15 @@
         "department": "Engineering",
         "manager": {
           "name": "Jane Smith",
-          "image": "https://company.com/images/jane_smith.png",
+          "image": "/Images/john-doe.jpg",
           "id": "MGR-001"
         },
         "coach": {
           "name": "Mark Johnson",
           "id": "CCH-001",
-          "image": "https://company.com/images/mark_johnson.png"
+          "image": "/Images/john-doe.jpg"
         },
-        "image": "https://company.com/images/john_doe.png"
+        "image": "/Images/john-doe.jpg"
       },
       "general_resume": {
         "resume": {
@@ -175,15 +175,15 @@
         "department": "Engineering",
         "manager": {
           "name": "Jane Smith",
-          "image": "https://company.com/images/jane_smith.png",
+          "image": "/Images/alice-smith.jpg",
           "id": "MGR-001"
         },
         "coach": {
           "name": "Mark Johnson",
           "id": "CCH-001",
-          "image": "https://company.com/images/mark_johnson.png"
+          "image": "/Images/alice-smith.jpg"
         },
-        "image": "https://company.com/images/alice_smith.png"
+        "image": "/Images/alice-smith.jpg"
       },
       "general_resume": {
         "resume": {
