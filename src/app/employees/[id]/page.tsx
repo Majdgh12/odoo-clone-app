@@ -1,12 +1,17 @@
-import EmployeeGeneral from "@/components/EmployeeGeneral"; // adjust path based on where General.tsx is
+// app/employees/[id]/page.tsx
 
-export default function EmployeeDetailsPage({ params }: { params: { id: string } }) {
-    const { id } = params;
+import EmployeeGeneral from "@/components/EmployeeGeneral";
 
-    return (
-        <div >
-            
-            <EmployeeGeneral /> {/* <-- Use your General component here */}
-        </div>
-    );
+export default function EmployeeDetailsPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+
+  return (
+    <div>
+
+      <EmployeeGeneral />
+    </div>
+  );
 }
