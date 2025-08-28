@@ -22,7 +22,7 @@ const Pagination: React.FC<PaginationProps> = ({
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 select-none">
       {/* Results Count */}
       <span className="text-sm text-gray-600">
         {startItem}-{endItem} / {totalItems}
@@ -33,7 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
-          className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 rounded-md cursor-pointer bg-gray-100 hover:bg-gray-100 "
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -41,7 +41,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
-          className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 rounded-md cursor-pointer bg-gray-100 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

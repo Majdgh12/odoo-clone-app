@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from './SideBar/Sidebar';
 import Navbar from '@/components/Navbar/Navbar';
 import type { Employee } from '@/lib/types';
 
@@ -71,15 +71,15 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar
+             <Sidebar
+        
         onFilterChange={handleFilterChange}
         selectedFilters={selectedFilters}
         onFilterUpdate={handleFilterUpdate}
+        
       />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+   
+        <div className="flex flex-col overflow-hidden h-screen">
         {/* Navbar */}
         <Navbar
           title="Employees"
@@ -99,6 +99,13 @@ export default function Home() {
 
 
       </div>
+      {/* Sidebar */} 
+      
+
+   
+
+      {/* Main Content Area */}
+ 
     </div>
   );
 }

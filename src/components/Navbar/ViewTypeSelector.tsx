@@ -19,7 +19,7 @@ const ViewTypeSelector: React.FC<ViewTypeSelectorProps> = ({ onViewTypeChange })
         <div className="flex items-center bg-gray-100 rounded-lg p-1">
             <button
                 onClick={() => handleViewChange('grid')}
-                className={`p-2 rounded-md transition-colors ${selectedView === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
+                className={`p-2 rounded-md transition-colors ${selectedView === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200 '
                     }`}
                 title="Grid View"
             >

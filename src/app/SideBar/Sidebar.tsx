@@ -6,7 +6,7 @@ import {
     getEmployees,
     getDepartments,
     filterEmployees
-} from '../lib/getEmployees';
+} from '../../lib/getEmployees';
 import type { Employee } from '@/lib/types';
 
 interface SidebarProps {
@@ -116,30 +116,33 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
 
     return (
-        <div className={`bg-white shadow-lg transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-80'} h-screen border-r border-gray-200`}>
+        <div className={`t-16 h-screen overflow-hidden bg-white shadow-lg transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}   border-r border-gray-300 pt-16` }>
             {/* Header with collapse button */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                {!isCollapsed && <h2 className="text-lg font-semibold text-gray-800">Filters</h2>}
-                <button
+            {/* <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                {!isCollapsed && <h2 className="text-lg font-semibold text-gray-800">Filters</h2>} */}
+               <div className='flex justify-end p-2 mb-0'>
+               <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="p-1 rounded-md hover:bg-gray-100 transition-colors"
                 >
-                    <ChevronLeft className={`w-5 h-5 text-gray-600 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
-                </button>
-            </div>
+                    <ChevronLeft className={`w-5 h-5 text-gray-600 transition-transform ${isCollapsed ? 'rotate-180' : ''} `} />
+                </button>     
+               </div>
+
+            {/* </div> */}
 
             {!isCollapsed && (
-                <div className="p-4 space-y-6">
+                <div className="p-2 space-y-0">
                     {/* COMPANY Section */}
                     <div>
-                        <div className="flex items-center mb-3">
-                            <Building2 className="w-5 h-5 text-purple-600 mr-2" />
+                        {/* <div className="flex items-center mb-3">
+                            <Building2 className="w-5 h-5 text-[#65435c] mr-2" />
                             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">COMPANY</h3>
-                        </div>
+                        </div> */}
 
                         <div className="space-y-1">
                             {/* All Companies */}
-                            <button
+                            {/* <button
                                 onClick={() => handleCompanyFilter('all')}
                                 className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${selectedFilters.company === 'all' || !selectedFilters.company
                                         ? 'bg-teal-50 text-teal-700 border border-teal-200'
@@ -152,10 +155,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         {counts.total}
                                     </span>
                                 </div>
-                            </button>
+                            </button> */}
 
                             {/* Individual Companies */}
-                            {companies.map((company) => (
+                            {/* {companies.map((company) => (
                                 <button
                                     key={company}
                                     onClick={() => handleCompanyFilter(company)}
@@ -173,29 +176,29 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         </span>
                                     </div>
                                 </button>
-                            ))}
+                            ))} */}
                         </div>
                     </div>
 
                     {/* DEPARTMENT Section */}
                     <div>
                         <div className="flex items-center mb-3">
-                            <Users2 className="w-5 h-5 text-purple-600 mr-2" />
-                            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">DEPARTMENT</h3>
+                            <Users2 className="w-5 h-5 text-[#65435c] mr-2" />
+                            <h3 className="text-sm font-semibold uppercase tracking-wide">DEPARTMENT</h3>
                         </div>
 
                         <div className="space-y-1">
                             {/* All Departments */}
                             <button
                                 onClick={() => handleDepartmentFilter('all')}
-                                className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${selectedFilters.department === 'all' || !selectedFilters.department
-                                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                className={`w-full text-left cursor-pointer px-3  rounded-s-sm  ${selectedFilters.department === 'all' || !selectedFilters.department
+                                        ? 'bg-[#007c7415] '
+                                        : ' hover:bg-gray-50'
                                     }`}
                             >
                                 <div className="flex items-center justify-between">
-                                    <span>All</span>
-                                    <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                                    <span className='px-2 py-1.5 font-semibold'>All</span>
+                                    <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
                                         {counts.total}
                                     </span>
                                 </div>
@@ -206,9 +209,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 <button
                                     key={department}
                                     onClick={() => handleDepartmentFilter(department)}
-                                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedFilters.department === department
-                                            ? 'bg-teal-50 text-teal-700 border border-teal-200 font-medium'
-                                            : 'text-gray-600 hover:bg-gray-50'
+                                    className={`w-full text-left mt-0.5 px-3 py-1.5 rounded-md text-sm transition-colors ${selectedFilters.department === department
+                                            ? 'bg-teal-50 text-black border font-medium'
+                                            : ' hover:bg-gray-200'
                                         }`}
                                 >
                                     <div className="flex items-center justify-between">
@@ -230,11 +233,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* Collapsed state icons */}
             {isCollapsed && (
                 <div className="p-2 space-y-4 mt-4">
+
                     <div className="flex justify-center">
-                        <Building2 className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div className="flex justify-center">
-                        <Users2 className="w-6 h-6 text-purple-600" />
+                        <Users2 className="w-6 h-6 text-[#65435c]" />
                     </div>
                 </div>
             )}
