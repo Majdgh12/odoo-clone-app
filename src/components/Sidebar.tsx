@@ -16,12 +16,14 @@ interface SidebarProps {
         department: string;
     };
     onFilterUpdate: (filterType: 'company' | 'department', value: string) => void;
+    children?: React.ReactNode; // i add this 
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
     onFilterChange,
     selectedFilters,
-    onFilterUpdate
+    onFilterUpdate,
+    children
 }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
@@ -226,7 +228,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                 </div>
             )}
-
+            
+            {children && ( // and i add this
+                <div className="block lg:hidden flex-1 overflow-y-auto p-4">
+                    {children}
+                </div>
+            )}
             {/* Collapsed state icons */}
             {isCollapsed && (
                 <div className="p-2 space-y-4 mt-4">
