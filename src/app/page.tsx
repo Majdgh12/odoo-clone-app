@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "@/components/SideBar/Sidebar";
 import Navbar from "@/components/Navbar/Navbar";
 import type { Employee } from "@/lib/types";
 import EmployeeCard from "@/components/EmployeeCard";
