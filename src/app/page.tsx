@@ -67,7 +67,9 @@ export default function Home() {
       const searchLower = term.toLowerCase();
 
       // Search in name
-      if (info.full_name.toLowerCase().includes(searchLower)) return true;
+      if (info.full_name.toLowerCase().includes(searchLower)) {
+        return true;
+      }
 
       // Search in job position
       if (info.job_position.toLowerCase().includes(searchLower)) return true;
