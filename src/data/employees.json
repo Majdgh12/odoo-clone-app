@@ -4,158 +4,47 @@
     "user": {
       "general_info": {
         "full_name": "John Doe",
+        "status":"online",
         "job_position": "Software Engineer",
         "work_email": "john.doe@company.com",
         "work_phone": "+1 415-555-0123",
         "work_mobile": "+1 415-555-0456",
-        "tags": [
-          "developer",
-          "team lead",
-          "remote"
-        ],
+        "tags": ["developer","team lead","remote"],
         "company": "Tech Solutions Inc.",
         "department": "Engineering",
-        "manager": {
-          "name": "Jane Smith",
-          "image": "https://company.com/images/jane_smith.png",
-          "id": "MGR-001"
-        },
-        "coach": {
-          "name": "Mark Johnson",
-          "id": "CCH-001",
-          "image": "https://company.com/images/mark_johnson.png"
-        },
-        "image": "https://company.com/images/john_doe.png"
+        "manager": {"name": "Jane Smith","image": "/Images/john-doe.jpg","id": "MGR-001"},
+        "coach": {"name": "Mark Johnson","id": "CCH-001","image": "/Images/john-doe.jpg"},
+        "image": "/Images/john-doe.jpg"
       },
       "general_resume": {
         "resume": {
-          "experience": [
-            {
-              "date_from": "2019-01-01",
-              "date_to": "2022-06-30",
-              "title": "Backend Developer",
-              "job_description": "Developed RESTful APIs and optimized database queries."
-            },
-            {
-              "date_from": "2022-07-01",
-              "date_to": "Present",
-              "title": "Software Engineer",
-              "job_description": "Leading development of web applications using Python and React."
-            }
+          "experience":[
+            {"date_from":"2019-01-01","date_to":"2022-06-30","title":"Backend Developer","job_description":"Developed RESTful APIs and optimized database queries."},
+            {"date_from":"2022-07-01","date_to":"Present","title":"Software Engineer","job_description":"Leading development of web applications using Python and React."}
           ],
-          "education": [
-            {
-              "title": "BSc in Computer Science",
-              "from_date": "2015-09-01",
-              "to_date": "2019-06-30"
-            }
-          ]
+          "education":[{"title":"BSc in Computer Science","from_date":"2015-09-01","to_date":"2019-06-30"}]
         },
-        "skills": {
-          "language": [
-            {
-              "language_name": "English",
-              "skill_level": {
-                "level": "Fluent",
-                "percentage": 95
-              }
-            }
-          ],
-          "marketing": {
-            "communication": {
-              "level": "Good",
-              "percentage": 80
-            },
-            "public_speaking": {
-              "level": "Average",
-              "percentage": 65
-            }
-          },
-          "programming_languages": [
-            {
-              "name": "Python",
-              "level": "Expert",
-              "percentage": 95
-            },
-            {
-              "name": "JavaScript",
-              "level": "Advanced",
-              "percentage": 85
-            }
-          ]
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":95}}],
+          "marketing":{"communication":{"level":"Good","percentage":80},"public_speaking":{"level":"Average","percentage":65}},
+          "programming_languages":[{"name":"Python","level":"Expert","percentage":95},{"name":"JavaScript","level":"Advanced","percentage":85}]
         }
       },
-      "work_info": {
-        "work_address": "Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
-        "work_location": "San Francisco Office",
-        "approvers": {
-          "time_off": "Jane Smith",
-          "timesheet": "Mark Johnson"
-        },
-        "schedule": {
-          "working_hours": "9:00 AM - 5:00 PM",
-          "timezone": "PST (UTC-8)"
-        },
-        "planning": {
-          "roles": [
-            "Developer",
-            "Team Lead"
-          ],
-          "default_roles": [
-            "Developer"
-          ]
-        }
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Developer","Team Lead"],"default_roles":["Developer"]}
       },
-      "private_info": {
-        "private_contact": {
-          "private_address": {
-            "street": "123 Main St",
-            "street2": "Apt 4B",
-            "city": "San Francisco",
-            "state": "CA",
-            "zip": "94107",
-            "country": "USA"
-          },
-          "private_email": "johndoe@gmail.com",
-          "private_phone": "+1 415-555-0789",
-          "home_work_distance": "12 km",
-          "private_car_plate": "CA-1234-XY"
-        },
-        "emergency": {
-          "contact_name": "Emily Doe",
-          "contact_phone": "+1 415-555-0999"
-        },
-        "family_status": {
-          "marital_status": "Married",
-          "spouse_complete_name": "Anna Doe",
-          "spouse_birthday": "1995-05-20",
-          "number_of_dependent_children": 2
-        },
-        "education": {
-          "certificate_level": "Bachelor",
-          "field_of_study": "Computer Science",
-          "school": "University of California, Berkeley"
-        },
-        "work_permit": {
-          "visa_no": "VISA-789456",
-          "work_permit": "WP-456123",
-          "visa_expiration_no": "2026-12-31",
-          "work_permit_expiration_date": "2027-06-30"
-        }
+      "private_info":{
+        "private_contact":{"private_address":{"street":"123 Main St","street2":"Apt 4B","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"johndoe@gmail.com","private_phone":"+1 415-555-0789","home_work_distance":"12 km","private_car_plate":"CA-1234-XY"},
+        "emergency":{"contact_name":"Emily Doe","contact_phone":"+1 415-555-0999"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Anna Doe","spouse_birthday":"1995-05-20","number_of_dependent_children":2},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Computer Science","school":"University of California, Berkeley"},
+        "work_permit":{"visa_no":"VISA-789456","work_permit":"WP-456123","visa_expiration_no":"2026-12-31","work_permit_expiration_date":"2027-06-30"}
       },
-      "settings": {
-        "status": {
-          "employee_type": "Full-time",
-          "related_user": "john.doe"
-        },
-        "application_settings": {
-          "hourly_cost": 50
-        },
-        "attendance_point_of_sale": {
-          "pin_code": "1234",
-          "badge_id": "BADGE-456"
-        }
-      }
+      "settings":{"status":{"employee_type":"Full-time","related_user":"john.doe"},"application_settings":{"hourly_cost":50},"attendance_point_of_sale":{"pin_code":"1234","badge_id":"BADGE-456"}}
     }
   },
   {
@@ -163,161 +52,384 @@
     "user": {
       "general_info": {
         "full_name": "Alice Smith",
+        "status": "offline",
         "job_position": "Frontend Developer",
         "work_email": "alice.smith@company.com",
         "work_phone": "+1 415-555-0145",
         "work_mobile": "+1 415-555-0780",
-        "tags": [
-          "developer",
-          "UI/UX"
-        ],
+        "tags": ["developer","UI/UX"],
         "company": "Tech Solutions Inc.",
         "department": "Engineering",
-        "manager": {
-          "name": "Jane Smith",
-          "image": "https://company.com/images/jane_smith.png",
-          "id": "MGR-001"
-        },
-        "coach": {
-          "name": "Mark Johnson",
-          "id": "CCH-001",
-          "image": "https://company.com/images/mark_johnson.png"
-        },
-        "image": "https://company.com/images/alice_smith.png"
+        "manager": {"name":"Jane Smith","image":"/Images/alice-smith.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/alice-smith.jpg"},
+        "image": "/Images/alice-smith.jpg"
       },
       "general_resume": {
         "resume": {
-          "experience": [
-            {
-              "date_from": "2020-02-01",
-              "date_to": "2022-06-30",
-              "title": "UI Developer",
-              "job_description": "Built responsive interfaces and reusable components."
-            },
-            {
-              "date_from": "2022-07-01",
-              "date_to": "Present",
-              "title": "Frontend Developer",
-              "job_description": "Developing web apps with React and TypeScript."
-            }
+          "experience":[
+            {"date_from":"2020-02-01","date_to":"2022-06-30","title":"UI Developer","job_description":"Built responsive interfaces and reusable components."},
+            {"date_from":"2022-07-01","date_to":"Present","title":"Frontend Developer","job_description":"Developing web apps with React and TypeScript."}
           ],
-          "education": [
-            {
-              "title": "BSc in Software Engineering",
-              "from_date": "2016-09-01",
-              "to_date": "2020-06-30"
-            }
-          ]
+          "education":[{"title":"BSc in Software Engineering","from_date":"2016-09-01","to_date":"2020-06-30"}]
         },
-        "skills": {
-          "language": [
-            {
-              "language_name": "English",
-              "skill_level": {
-                "level": "Fluent",
-                "percentage": 90
-              }
-            }
-          ],
-          "marketing": {
-            "communication": {
-              "level": "Good",
-              "percentage": 75
-            },
-            "public_speaking": {
-              "level": "Average",
-              "percentage": 60
-            }
-          },
-          "programming_languages": [
-            {
-              "name": "JavaScript",
-              "level": "Expert",
-              "percentage": 95
-            },
-            {
-              "name": "TypeScript",
-              "level": "Advanced",
-              "percentage": 85
-            },
-            {
-              "name": "HTML/CSS",
-              "level": "Expert",
-              "percentage": 95
-            }
-          ]
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Good","percentage":75},"public_speaking":{"level":"Average","percentage":60}},
+          "programming_languages":[{"name":"JavaScript","level":"Expert","percentage":95},{"name":"TypeScript","level":"Advanced","percentage":85},{"name":"HTML/CSS","level":"Expert","percentage":95}]
         }
       },
-      "work_info": {
-        "work_address": "Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
-        "work_location": "San Francisco Office",
-        "approvers": {
-          "time_off": "Jane Smith",
-          "timesheet": "Mark Johnson"
-        },
-        "schedule": {
-          "working_hours": "9:00 AM - 5:00 PM",
-          "timezone": "PST (UTC-8)"
-        },
-        "planning": {
-          "roles": [
-            "Developer"
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Developer"],"default_roles":["Developer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"456 Oak St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"alice.smith@gmail.com","private_phone":"+1 415-555-0990","home_work_distance":"8 km","private_car_plate":"CA-5678-AB"},
+        "emergency":{"contact_name":"Tom Smith","contact_phone":"+1 415-555-1234"},
+        "family_status":{"marital_status":"Single","spouse_complete_name":"","spouse_birthday":"","number_of_dependent_children":0},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Software Engineering","school":"Stanford University"},
+        "work_permit":{"visa_no":"VISA-123789","work_permit":"WP-987654","visa_expiration_no":"2026-05-31","work_permit_expiration_date":"2027-01-15"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"alice.smith"},"application_settings":{"hourly_cost":45},"attendance_point_of_sale":{"pin_code":"5678","badge_id":"BADGE-789"}}
+    }
+  },
+  {
+    "id": 3,
+    "user": {
+      "general_info": {
+        "full_name": "Michael Johnson",
+        "status":"online",
+        "job_position": "DevOps Engineer",
+        "work_email": "michael.johnson@company.com",
+        "work_phone": "+1 415-555-0111",
+        "work_mobile": "+1 415-555-0222",
+        "tags": ["DevOps","cloud","CI/CD"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name": "Jane Smith","image": "/Images/michael-johnson.jpg","id": "MGR-001"},
+        "coach": {"name": "Mark Johnson","id": "CCH-001","image": "/Images/michael-johnson.jpg"},
+        "image": "/Images/michael-johnson.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2018-03-01","date_to":"2021-12-31","title":"System Administrator","job_description":"Managed servers and cloud infrastructure."},
+            {"date_from":"2022-01-01","date_to":"Present","title":"DevOps Engineer","job_description":"Implemented CI/CD pipelines and automated deployments."}
           ],
-          "default_roles": [
-            "Developer"
-          ]
+          "education":[{"title":"BSc in Information Technology","from_date":"2012-09-01","to_date":"2016-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Good","percentage":70},"public_speaking":{"level":"Average","percentage":60}},
+          "programming_languages":[{"name":"Python","level":"Advanced","percentage":80},{"name":"Bash","level":"Expert","percentage":90}]
         }
       },
-      "private_info": {
-        "private_contact": {
-          "private_address": {
-            "street": "456 Oak St",
-            "street2": "",
-            "city": "San Francisco",
-            "state": "CA",
-            "zip": "94107",
-            "country": "USA"
-          },
-          "private_email": "alice.smith@gmail.com",
-          "private_phone": "+1 415-555-0990",
-          "home_work_distance": "8 km",
-          "private_car_plate": "CA-5678-AB"
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"8:00 AM - 4:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["DevOps Engineer"],"default_roles":["DevOps Engineer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"789 Pine St","street2":"Apt 5A","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"michael.johnson@gmail.com","private_phone":"+1 415-555-0333","home_work_distance":"10 km","private_car_plate":"CA-3456-CD"},
+        "emergency":{"contact_name":"Sarah Johnson","contact_phone":"+1 415-555-0444"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Laura Johnson","spouse_birthday":"1992-07-10","number_of_dependent_children":1},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Information Technology","school":"University of California, Berkeley"},
+        "work_permit":{"visa_no":"VISA-456123","work_permit":"WP-654321","visa_expiration_no":"2026-10-15","work_permit_expiration_date":"2027-05-20"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"michael.johnson"},"application_settings":{"hourly_cost":55},"attendance_point_of_sale":{"pin_code":"1111","badge_id":"BADGE-111"}}
+    }
+  },
+  {
+    "id": 4,
+    "user": {
+      "general_info": {
+        "full_name": "Emily Davis",
+        "status": "online",
+        "job_position": "QA Engineer",
+        "work_email": "emily.davis@company.com",
+        "work_phone": "+1 415-555-0440",
+        "work_mobile": "+1 415-555-0441",
+        "tags": ["QA","automation","testing"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/emily-davis.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/emily-davis.jpg"},
+        "image": "/Images/emily-davis.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2017-05-01","date_to":"2020-06-30","title":"QA Analyst","job_description":"Performed manual testing for web applications."},
+            {"date_from":"2020-07-01","date_to":"Present","title":"QA Engineer","job_description":"Automated testing using Selenium and Python."}
+          ],
+          "education":[{"title":"BSc in Software Engineering","from_date":"2013-09-01","to_date":"2017-06-30"}]
         },
-        "emergency": {
-          "contact_name": "Tom Smith",
-          "contact_phone": "+1 415-555-1234"
-        },
-        "family_status": {
-          "marital_status": "Single",
-          "spouse_complete_name": "",
-          "spouse_birthday": "",
-          "number_of_dependent_children": 0
-        },
-        "education": {
-          "certificate_level": "Bachelor",
-          "field_of_study": "Software Engineering",
-          "school": "Stanford University"
-        },
-        "work_permit": {
-          "visa_no": "VISA-123789",
-          "work_permit": "WP-987654",
-          "visa_expiration_no": "2026-05-31",
-          "work_permit_expiration_date": "2027-01-15"
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Good","percentage":70},"public_speaking":{"level":"Average","percentage":60}},
+          "programming_languages":[{"name":"Python","level":"Advanced","percentage":85},{"name":"Selenium","level":"Expert","percentage":90}]
         }
       },
-      "settings": {
-        "status": {
-          "employee_type": "Full-time",
-          "related_user": "alice.smith"
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["QA Engineer"],"default_roles":["QA Engineer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"321 Cedar St","street2":"Apt 7C","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"emily.davis@gmail.com","private_phone":"+1 415-555-0555","home_work_distance":"9 km","private_car_plate":"CA-8765-XY"},
+        "emergency":{"contact_name":"Robert Davis","contact_phone":"+1 415-555-0666"},
+        "family_status":{"marital_status":"Single","spouse_complete_name":"","spouse_birthday":"","number_of_dependent_children":0},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Software Engineering","school":"Stanford University"},
+        "work_permit":{"visa_no":"VISA-321654","work_permit":"WP-321654","visa_expiration_no":"2026-11-30","work_permit_expiration_date":"2027-06-30"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"emily.davis"},"application_settings":{"hourly_cost":40},"attendance_point_of_sale":{"pin_code":"4444","badge_id":"BADGE-444"}}
+    }
+  },
+  {
+    "id": 5,
+    "user": {
+      "general_info": {
+        "full_name": "David Wilson",
+        "status": "offline",
+        "job_position": "Mobile Developer",
+        "work_email": "david.wilson@company.com",
+        "work_phone": "+1 415-555-0550",
+        "work_mobile": "+1 415-555-0551",
+        "tags": ["developer","mobile","React"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/david-wilson.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/david-wilson.jpg"},
+        "image": "/Images/david-wilson.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2018-01-01","date_to":"2020-12-31","title":"Junior Mobile Developer","job_description":"Built Android apps using Java."},
+            {"date_from":"2021-01-01","date_to":"Present","title":"Mobile Developer","job_description":"Developing cross-platform apps with React Native."}
+          ],
+          "education":[{"title":"BSc in Computer Science","from_date":"2014-09-01","to_date":"2018-06-30"}]
         },
-        "application_settings": {
-          "hourly_cost": 45
-        },
-        "attendance_point_of_sale": {
-          "pin_code": "5678",
-          "badge_id": "BADGE-789"
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Good","percentage":75},"public_speaking":{"level":"Average","percentage":65}},
+          "programming_languages":[{"name":"Java","level":"Advanced","percentage":85},{"name":"React Native","level":"Expert","percentage":90}]
         }
-      }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"10:00 AM - 6:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Mobile Developer"],"default_roles":["Mobile Developer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"654 Maple St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"david.wilson@gmail.com","private_phone":"+1 415-555-0777","home_work_distance":"7 km","private_car_plate":"CA-2345-BC"},
+        "emergency":{"contact_name":"Nancy Wilson","contact_phone":"+1 415-555-0888"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Olivia Wilson","spouse_birthday":"1990-11-15","number_of_dependent_children":1},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Computer Science","school":"University of California, Berkeley"},
+        "work_permit":{"visa_no":"VISA-654987","work_permit":"WP-987321","visa_expiration_no":"2026-08-31","work_permit_expiration_date":"2027-04-30"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"david.wilson"},"application_settings":{"hourly_cost":48},"attendance_point_of_sale":{"pin_code":"5555","badge_id":"BADGE-555"}}
+    }
+  },
+  {
+    "id": 6,
+    "user": {
+      "general_info": {
+        "full_name": "Sarah Brown",
+        "status":"online",
+        "job_position": "Data Scientist",
+        "work_email": "sarah.brown@company.com",
+        "work_phone": "+1 415-555-0660",
+        "work_mobile": "+1 415-555-0661",
+        "tags": ["data","python","machine learning"],
+        "company": "Tech Solutions Inc.",
+        "department": "Data Science",
+        "manager": {"name":"Jane Smith","image":"/Images/sarah-brown.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/sarah-brown.jpg"},
+        "image": "/Images/sarah-brown.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2017-06-01","date_to":"2019-12-31","title":"Data Analyst","job_description":"Analyzed datasets and built dashboards."},
+            {"date_from":"2020-01-01","date_to":"Present","title":"Data Scientist","job_description":"Developed ML models and predictive analytics."}
+          ],
+          "education":[{"title":"MSc in Data Science","from_date":"2015-09-01","to_date":"2017-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":95}}],
+          "marketing":{"communication":{"level":"Good","percentage":70},"public_speaking":{"level":"Average","percentage":60}},
+          "programming_languages":[{"name":"Python","level":"Expert","percentage":95},{"name":"R","level":"Advanced","percentage":85}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Data Scientist"],"default_roles":["Data Scientist"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"987 Spruce St","street2":"Apt 2D","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"sarah.brown@gmail.com","private_phone":"+1 415-555-0991","home_work_distance":"11 km","private_car_plate":"CA-5678-DE"},
+        "emergency":{"contact_name":"Michael Brown","contact_phone":"+1 415-555-0992"},
+        "family_status":{"marital_status":"Single","spouse_complete_name":"","spouse_birthday":"","number_of_dependent_children":0},
+        "education":{"certificate_level":"Master","field_of_study":"Data Science","school":"Stanford University"},
+        "work_permit":{"visa_no":"VISA-987321","work_permit":"WP-123987","visa_expiration_no":"2026-09-30","work_permit_expiration_date":"2027-05-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"sarah.brown"},"application_settings":{"hourly_cost":60},"attendance_point_of_sale":{"pin_code":"6666","badge_id":"BADGE-666"}}
+    }
+  },
+   {
+    "id": 7,
+    "user": {
+      "general_info": {
+        "full_name": "James Wilson",
+        "status":"online",
+        "job_position": "Backend Developer",
+        "work_email": "james.wilson@company.com",
+        "work_phone": "+1 415-555-0770",
+        "work_mobile": "+1 415-555-0771",
+        "tags": ["backend","java","spring"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/james-wilson.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/james-wilson.jpg"},
+        "image": "/Images/james-wilson.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2016-01-01","date_to":"2018-12-31","title":"Java Developer","job_description":"Developed backend services in Java."},
+            {"date_from":"2019-01-01","date_to":"Present","title":"Backend Developer","job_description":"Designed APIs and optimized databases using Spring Boot."}
+          ],
+          "education":[{"title":"BSc in Computer Science","from_date":"2012-09-01","to_date":"2016-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Good","percentage":70},"public_speaking":{"level":"Average","percentage":60}},
+          "programming_languages":[{"name":"Java","level":"Expert","percentage":90},{"name":"SQL","level":"Advanced","percentage":85}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:30 AM - 5:30 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Backend Developer"],"default_roles":["Backend Developer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"321 Oak St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"james.wilson@gmail.com","private_phone":"+1 415-555-0881","home_work_distance":"8 km","private_car_plate":"CA-4567-FG"},
+        "emergency":{"contact_name":"Laura Wilson","contact_phone":"+1 415-555-0990"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Anna Wilson","spouse_birthday":"1992-03-12","number_of_dependent_children":2},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Computer Science","school":"UC Berkeley"},
+        "work_permit":{"visa_no":"VISA-741852","work_permit":"WP-852741","visa_expiration_no":"2026-12-31","work_permit_expiration_date":"2027-08-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"james.wilson"},"application_settings":{"hourly_cost":55},"attendance_point_of_sale":{"pin_code":"7777","badge_id":"BADGE-777"}}
+    }
+  },
+  {
+    "id": 8,
+    "user": {
+      "general_info": {
+        "full_name": "Olivia Green",
+        "status":"offline",
+        "job_position": "HR Specialist",
+        "work_email": "olivia.green@company.com",
+        "work_phone": "+1 415-555-0880",
+        "work_mobile": "+1 415-555-0881",
+        "tags": ["hr","recruitment","training"],
+        "company": "Tech Solutions Inc.",
+        "department": "Human Resources",
+        "manager": {"name":"Mark Johnson","image":"/Images/olivia-green.jpg","id":"MGR-002"},
+        "coach": {"name":"Samantha Lee","id":"CCH-002","image":"/Images/olivia-green.jpg"},
+        "image": "/Images/olivia-green.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2015-01-01","date_to":"2018-06-30","title":"HR Assistant","job_description":"Handled HR admin tasks and employee onboarding."},
+            {"date_from":"2018-07-01","date_to":"Present","title":"HR Specialist","job_description":"Focused on recruitment and training."}
+          ],
+          "education":[{"title":"BA in Human Resources","from_date":"2011-09-01","to_date":"2015-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":95}}],
+          "marketing":{"communication":{"level":"Excellent","percentage":85},"public_speaking":{"level":"Good","percentage":75}},
+          "programming_languages":[]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Mark Johnson","timesheet":"Samantha Lee"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["HR Specialist"],"default_roles":["HR Specialist"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"654 Pine St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"olivia.green@gmail.com","private_phone":"+1 415-555-0999","home_work_distance":"6 km","private_car_plate":"CA-1122-HR"},
+        "emergency":{"contact_name":"Daniel Green","contact_phone":"+1 415-555-0777"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Michael Green","spouse_birthday":"1990-05-20","number_of_dependent_children":1},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Human Resources","school":"San Francisco State University"},
+        "work_permit":{"visa_no":"VISA-963852","work_permit":"WP-369258","visa_expiration_no":"2026-10-31","work_permit_expiration_date":"2027-07-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"olivia.green"},"application_settings":{"hourly_cost":40},"attendance_point_of_sale":{"pin_code":"8888","badge_id":"BADGE-888"}}
+    }
+  },
+  {
+    "id": 9,
+    "user": {
+      "general_info": {
+        "full_name": "Ethan Clark",
+        "status":"online",
+        "job_position": "Marketing Manager",
+        "work_email": "ethan.clark@company.com",
+        "work_phone": "+1 415-555-0990",
+        "work_mobile": "+1 415-555-0991",
+        "tags": ["marketing","seo","branding"],
+        "company": "Tech Solutions Inc.",
+        "department": "Marketing",
+        "manager": {"name":"Samantha Lee","image":"/Images/ethan-clark.jpg","id":"MGR-003"},
+        "coach": {"name":"Michael Brown","id":"CCH-003","image":"/Images/ethan-clark.jpg"},
+        "image": "/Images/ethan-clark.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2014-02-01","date_to":"2018-12-31","title":"Marketing Executive","job_description":"Managed campaigns and social media."},
+            {"date_from":"2019-01-01","date_to":"Present","title":"Marketing Manager","job_description":"Leading a marketing team focused on digital growth."}
+          ],
+          "education":[{"title":"MBA in Marketing","from_date":"2012-09-01","to_date":"2014-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":95}}],
+          "marketing":{"communication":{"level":"Excellent","percentage":90},"public_speaking":{"level":"Excellent","percentage":85}},
+          "programming_languages":[{"name":"Google Analytics","level":"Advanced","percentage":80},{"name":"SEO Tools","level":"Expert","percentage":90}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Samantha Lee","timesheet":"Michael Brown"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Marketing Manager"],"default_roles":["Marketing Manager"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"789 Willow St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"ethan.clark@gmail.com","private_phone":"+1 415-555-0778","home_work_distance":"10 km","private_car_plate":"CA-5566-MR"},
+        "emergency":{"contact_name":"Laura Clark","contact_phone":"+1 415-555-0667"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Sophia Clark","spouse_birthday":"1989-08-22","number_of_dependent_children":2},
+        "education":{"certificate_level":"Master","field_of_study":"Marketing","school":"UCLA"},
+        "work_permit":{"visa_no":"VISA-159753","work_permit":"WP-357951","visa_expiration_no":"2026-11-30","work_permit_expiration_date":"2027-09-30"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"ethan.clark"},"application_settings":{"hourly_cost":70},"attendance_point_of_sale":{"pin_code":"9999","badge_id":"BADGE-999"}}
     }
   }
+  
 ]
