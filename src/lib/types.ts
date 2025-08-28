@@ -24,6 +24,7 @@ export interface GeneralInfo {
   manager: Manager;
   coach: Coach;
   image: string;
+  status: "online" | "offline";
 }
 
 export interface Experience {

@@ -5,13 +5,14 @@ import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 type EmployeeCardProps = {
-  id:number
+  id: number
   full_name: string;
   job_position: string;
   work_email: string;
   work_phone: string;
   image: string;
   tags?: string[];
+  status: "online" | "offline";
 };
 
 function isRemoteUrl(src: string) {
@@ -31,6 +32,7 @@ export default function EmployeeCard({
   work_phone,
   image,
   tags = [],
+  status,
 }: EmployeeCardProps) {
   const useFallback = isRemoteUrl(image);
 
@@ -70,7 +72,14 @@ export default function EmployeeCard({
 
         {/* Info Section */}
         <div className="flex-1">
-          <h2 className="text-lg font-bold text-black">{full_name}</h2>
+          <h2 className="text-lg font-bold text-black flex items-center gap-2">
+            {full_name}
+            <span
+              className={`w-3 h-3 rounded-full ${status === "online" ? "bg-green-400" : "bg-yellow-400"
+                }`}
+              title={status}
+            />
+          </h2>
           <p className="text-gray-600 text-sm mb-2">{job_position}</p>
 
           <div className="flex items-center text-sm text-gray-700 gap-2">
@@ -97,5 +106,5 @@ export default function EmployeeCard({
         </div>
       </div>
     </Link>
-    );
+  );
 }
