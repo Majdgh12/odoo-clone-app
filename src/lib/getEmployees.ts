@@ -1,6 +1,7 @@
 // lib/getEmployees.ts - Simple way to use JSON data
 import employeeData from "@/data/employees.json";
 import type { Employee, PaginationResult, Stats, FilterOptions } from "@/lib/types";
+import { log } from "console";
 
 /**
  * Get all employees
@@ -11,6 +12,8 @@ export const getEmployees = (): Employee[] => {
   return Array.isArray(employeeData)
     ? (employeeData as unknown as Employee[])
     : [employeeData as unknown as Employee];
+    console.log(getEmployees());
+
 };
 
 /**

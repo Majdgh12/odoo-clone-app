@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "@/components/SideBar/Sidebar";
 import Navbar from "@/components/Navbar/Navbar";
 import type { Employee } from "@/lib/types";
 import EmployeeCard from "@/components/EmployeeCard";
@@ -88,8 +88,8 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar
+             <Sidebar
+        
         onFilterChange={handleFilterChange}
         selectedFilters={selectedFilters}
         onFilterUpdate={handleFilterUpdate}
@@ -134,6 +134,13 @@ export default function Home() {
           </div>
         )}
       </div>
+      {/* Sidebar */} 
+      
+
+   
+
+      {/* Main Content Area */}
+ 
     </div>
   );
 }

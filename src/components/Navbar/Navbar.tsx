@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { Settings } from 'lucide-react';
 import {
   SearchBar,
   FilterDropdown,
@@ -45,72 +46,53 @@ const Navbar: React.FC<NavbarProps> = ({
   const [showNewBadge] = useState(true);
 
   const handleFavoriteToggle = () => {
-    // Handle favorite functionality
     console.log('Favorite toggled');
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-4">
-      {/* Top Row - Title and Main Actions */}
-      <div className="flex items-center justify-between mb-4">
-        {/* Left Side - Title */}
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2">
-            {showNewBadge && (
-              <span className="bg-purple-600 text-white px-2 py-1 rounded text-xs font-medium">
-                New
-              </span>
-            )}
-            <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-            <span className="text-gray-400">📋</span>
-          </div>
-        </div>
-
-        {/* Right Side - Action Buttons */}
-        <div className="flex items-center space-x-4">
-          <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalEmployees}
-            itemsPerPage={itemsPerPage}
-            onPageChange={onPageChange}
-          />
-          <ActionButtons
-            onNewEmployee={onNewEmployee}
-            onExport={onExport}
-            onSettings={onSettings}
-          />
-        </div>
-      </div>
-
-      {/* Bottom Row - Search and Filter Controls */}
-      <div className="flex items-center justify-between space-x-4">
-        {/* Left Side - Search and Filters */}
-        <div className="flex items-center space-x-3 flex-1 max-w-2xl">
-          <SearchBar 
-            onSearch={onSearch}
-            placeholder="Search..."
-          />
-        </div>
-
-        {/* Right Side - Filter Controls */}
-        <div className="flex items-center space-x-3">
-          <FilterDropdown onFilterChange={onFilterChange} />
-          <GroupByDropdown onGroupByChange={onGroupByChange} />
-          <FavoritesButton onFavoriteToggle={handleFavoriteToggle} />
-        </div>
-      </div>
-
-      {/* Optional - Filter Status Bar */}
-      <div className="mt-3 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">
-            Showing {totalEmployees} employees
-          </span>
-        </div>
-      </div>
+  <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 px-4 py-4  z-10 ">
+  <div className="flex items-center gap-2 justify-between w-full">
+    
+    {/* Left - New Employee Button */}
+    <div className="flex justify-start">
+      <button
+        onClick={onNewEmployee}
+        className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
+      >
+        New</button> 
+        <span className="flex pl-1 mt-1.5 text-xl font- text-gray-900 select-none">{title}</span>
+        <Settings className="mt-3 pl-0.5 w-4 h-4 text-black" />
     </div>
+
+    {/* Center - Search Bar */}
+    <div className="flex-1 flex w-[300px] max-w-md justify-center select-none">
+      <SearchBar onSearch={onSearch} placeholder="Search..." />
+    </div>
+
+    {/* Right - Pagination + ViewType + Settings */}
+    <div className="flex justify-end items-center gap-3">
+    
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalEmployees}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
+      />
+        <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
+      {/* <SettingsButton onSettings={onSettings} /> */}
+    </div>
+
+  </div>
+
+  {/* Status bar
+  <div className="mt-3 flex items-center justify-between">
+    <span className="text-sm text-gray-600">
+      Showing {totalEmployees} employees
+    </span>
+  </div> */}
+</div>
+
   );
 };
 
