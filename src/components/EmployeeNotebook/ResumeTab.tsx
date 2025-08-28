@@ -22,25 +22,25 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
   const formatDate = (dateString: string) => {
     if (dateString.toLowerCase() === 'present') return 'Current';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: '2-digit', 
-      day: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
     });
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
+
       {/* Left Side - Resume Content */}
       <div className="lg:col-span-2 space-y-8">
-        
+
         {/* Experience Section */}
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">RESUME</h3>
           </div>
-          
+
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium text-gray-800">Experience</h4>
@@ -48,7 +48,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                 ADD
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {resume.experience?.map((exp, index) => (
                 <div key={index} className="flex items-start space-x-4 group">
@@ -59,7 +59,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                       <div className="w-px h-16 bg-gray-300 mt-2"></div>
                     )}
                   </div>
-                  
+
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -86,7 +86,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                 ADD
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {resume.education?.map((edu, index) => (
                 <div key={index} className="flex items-start space-x-4 group">
@@ -97,7 +97,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                       <div className="w-px h-16 bg-gray-300 mt-2"></div>
                     )}
                   </div>
-                  
+
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -135,7 +135,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
               ADD
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div className="group">
               <div className="flex items-center justify-between mb-2">
@@ -149,7 +149,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                 </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className={`h-2 rounded-full ${getSkillColor(skills.marketing.communication.percentage)}`}
                   style={{ width: `${skills.marketing.communication.percentage}%` }}
                 ></div>
@@ -168,7 +168,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                 </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className={`h-2 rounded-full ${getSkillColor(skills.marketing.public_speaking.percentage)}`}
                   style={{ width: `${skills.marketing.public_speaking.percentage}%` }}
                 ></div>
@@ -185,7 +185,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
               ADD
             </button>
           </div>
-          
+
           <div className="space-y-4">
             {skills.programming_languages?.map((skill, index) => (
               <div key={index} className="group">
@@ -200,7 +200,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                   </div>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className={`h-2 rounded-full ${getSkillColor(skill.percentage)}`}
                     style={{ width: `${skill.percentage}%` }}
                   ></div>
@@ -219,7 +219,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                 ADD
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {skills.language.map((lang, index) => (
                 <div key={index}>
@@ -229,17 +229,17 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee }) => {
                       {/* Language Level Badges */}
                       <div className="flex items-center space-x-1">
                         <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-medium">
-                          {lang.skill_level.level === 'Fluent' ? 'C2' : 
-                           lang.skill_level.level === 'Advanced' ? 'C1' : 
-                           lang.skill_level.level === 'Intermediate' ? 'B2' : 
-                           lang.skill_level.level === 'Beginner' ? 'A1' : 'C1'}
+                          {lang.skill_level.level === 'Fluent' ? 'C2' :
+                            lang.skill_level.level === 'Advanced' ? 'C1' :
+                              lang.skill_level.level === 'Intermediate' ? 'B2' :
+                                lang.skill_level.level === 'Beginner' ? 'A1' : 'C1'}
                         </span>
                       </div>
                       <span className="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">{lang.skill_level.percentage}%</span>
                     </div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                       className={`h-2 rounded-full ${getSkillColor(lang.skill_level.percentage)}`}
                       style={{ width: `${lang.skill_level.percentage}%` }}
                     ></div>

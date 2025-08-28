@@ -10,9 +10,8 @@ import { log } from "console";
 export const getEmployees = (): Employee[] => {
   // If JSON contains single object, wrap in array; if array, return as is
   return Array.isArray(employeeData)
-    ? (employeeData as unknown as Employee[])
-    : [employeeData as unknown as Employee];
-    console.log(getEmployees());
+      ? (employeeData as unknown as Employee[])
+      : [employeeData as unknown as Employee];
 
 };
 

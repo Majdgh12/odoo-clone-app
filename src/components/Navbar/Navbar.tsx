@@ -4,9 +4,6 @@ import React, { useState } from 'react';
 import { Settings } from 'lucide-react';
 import {
   SearchBar,
-  FilterDropdown,
-  GroupByDropdown,
-  FavoritesButton,
   ViewTypeSelector,
   Pagination,
   ActionButtons
@@ -50,49 +47,109 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-  <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 px-4 py-4  z-10 ">
-  <div className="flex items-center gap-2 justify-between w-full">
-    
-    {/* Left - New Employee Button */}
-    <div className="flex justify-start">
-      <button
-        onClick={onNewEmployee}
-        className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
-      >
-        New</button> 
-        <span className="flex pl-1 mt-1.5 text-xl font- text-gray-900 select-none">{title}</span>
-        <Settings className="mt-3 pl-0.5 w-4 h-4 text-black" />
+    <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 px-4 py-4 z-10">
+      {/* Large Screen Layout (lg and above) */}
+      <div className="hidden lg:flex items-center gap-2 justify-between w-full">
+        {/* Left - New Employee Button */}
+        <div className="flex justify-start">
+          <button
+            onClick={onNewEmployee}
+            className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
+          >
+            New
+          </button>
+          
+          <span className="flex pl-1 mt-1.5 text-xl font-medium text-black select-none">{title}</span>
+          <Settings className="mt-3 pl-0.5 w-4 h-4 text-black" />
+        </div>
+
+        {/* Center - Search Bar */}
+        <div className="flex-1 flex w-[300px] max-w-md justify-center select-none">
+          <SearchBar onSearch={onSearch} placeholder="Search..." />
+        </div>
+
+        {/* Right - Pagination + ViewType + Settings */}
+        <div className="flex justify-end items-center gap-3">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalEmployees}
+            itemsPerPage={itemsPerPage}
+            onPageChange={onPageChange}
+          />
+          <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
+        </div>
+      </div>
+
+      {/* Medium Screen Layout (md to lg) */}
+      <div className="hidden md:flex lg:hidden flex-col gap-3">
+        {/* First Row - Title and Controls */}
+        <div className="flex items-center justify-between w-full">
+          {/* Left - New Employee Button and Title */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onNewEmployee}
+              className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
+            >
+              New
+            </button>
+            <span className="text-xl font-medium text-black select-none">{title}</span>
+            <Settings className="w-4 h-4 text-black" />
+          </div>
+
+          {/* Right - Pagination + ViewType */}
+          <div className="flex items-center gap-3">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalEmployees}
+              itemsPerPage={itemsPerPage}
+              onPageChange={onPageChange}
+            />
+            <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
+          </div>
+        </div>
+
+        {/* Second Row - Full Width Search Bar */}
+        <div className="w-full">
+          <SearchBar onSearch={onSearch} placeholder="Search..." />
+        </div>
+      </div>
+
+      {/* Small Screen Layout (below md) */}
+      <div className="flex md:hidden flex-col gap-3">
+        {/* First Row - New Button, Settings, Pagination, ViewType */}
+        <div className="flex items-center justify-between w-full">
+          {/* Left - New Button and Settings */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onNewEmployee}
+              className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
+            >
+              New
+            </button>
+            <Settings className="w-4 h-4 text-black" />
+          </div>
+
+          {/* Right - Pagination + ViewType */}
+          <div className="flex items-center gap-2">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalEmployees}
+              itemsPerPage={itemsPerPage}
+              onPageChange={onPageChange}
+            />
+            <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
+          </div>
+        </div>
+
+        {/* Second Row - Full Width Search Bar */}
+        <div className="w-full">
+          <SearchBar onSearch={onSearch} placeholder="Search..." />
+        </div>
+      </div>
     </div>
-
-    {/* Center - Search Bar */}
-    <div className="flex-1 flex w-[300px] max-w-md justify-center select-none">
-      <SearchBar onSearch={onSearch} placeholder="Search..." />
-    </div>
-
-    {/* Right - Pagination + ViewType + Settings */}
-    <div className="flex justify-end items-center gap-3">
-    
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={totalEmployees}
-        itemsPerPage={itemsPerPage}
-        onPageChange={onPageChange}
-      />
-        <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
-      {/* <SettingsButton onSettings={onSettings} /> */}
-    </div>
-
-  </div>
-
-  {/* Status bar
-  <div className="mt-3 flex items-center justify-between">
-    <span className="text-sm text-gray-600">
-      Showing {totalEmployees} employees
-    </span>
-  </div> */}
-</div>
-
   );
 };
 

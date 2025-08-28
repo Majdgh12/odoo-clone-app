@@ -430,6 +430,342 @@
       },
       "settings":{"status":{"employee_type":"Full-time","related_user":"ethan.clark"},"application_settings":{"hourly_cost":70},"attendance_point_of_sale":{"pin_code":"9999","badge_id":"BADGE-999"}}
     }
+  },
+  {
+    "id": 10,
+    "user": {
+      "general_info": {
+        "full_name": "Rachel Martinez",
+        "status": "online",
+        "job_position": "UX Designer",
+        "work_email": "rachel.martinez@company.com",
+        "work_phone": "+1 415-555-1001",
+        "work_mobile": "+1 415-555-1002",
+        "tags": ["design","UX","wireframes","prototyping"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/rachel-martinez.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/rachel-martinez.jpg"},
+        "image": "/Images/rachel-martinez.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2019-01-01","date_to":"2021-06-30","title":"UI Designer","job_description":"Created user interfaces and design systems."},
+            {"date_from":"2021-07-01","date_to":"Present","title":"UX Designer","job_description":"Conducting user research and designing user experiences."}
+          ],
+          "education":[{"title":"BA in Graphic Design","from_date":"2015-09-01","to_date":"2019-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}},{"language_name":"Spanish","skill_level":{"level":"Native","percentage":100}}],
+          "marketing":{"communication":{"level":"Good","percentage":80},"public_speaking":{"level":"Good","percentage":70}},
+          "programming_languages":[{"name":"Figma","level":"Expert","percentage":95},{"name":"Adobe XD","level":"Advanced","percentage":85}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["UX Designer"],"default_roles":["UX Designer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"234 Elm St","street2":"Apt 3B","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"rachel.martinez@gmail.com","private_phone":"+1 415-555-1003","home_work_distance":"9 km","private_car_plate":"CA-7890-UX"},
+        "emergency":{"contact_name":"Carlos Martinez","contact_phone":"+1 415-555-1004"},
+        "family_status":{"marital_status":"Single","spouse_complete_name":"","spouse_birthday":"","number_of_dependent_children":0},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Graphic Design","school":"San Francisco Art Institute"},
+        "work_permit":{"visa_no":"VISA-147258","work_permit":"WP-741852","visa_expiration_no":"2026-07-31","work_permit_expiration_date":"2027-03-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"rachel.martinez"},"application_settings":{"hourly_cost":52},"attendance_point_of_sale":{"pin_code":"1010","badge_id":"BADGE-101"}}
+    }
+  },
+  {
+    "id": 11,
+    "user": {
+      "general_info": {
+        "full_name": "Kevin Thompson",
+        "status": "offline",
+        "job_position": "Security Engineer",
+        "work_email": "kevin.thompson@company.com",
+        "work_phone": "+1 415-555-1111",
+        "work_mobile": "+1 415-555-1112",
+        "tags": ["security","penetration testing","compliance"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/kevin-thompson.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/kevin-thompson.jpg"},
+        "image": "/Images/kevin-thompson.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2017-03-01","date_to":"2020-08-31","title":"IT Security Specialist","job_description":"Implemented security protocols and monitored systems."},
+            {"date_from":"2020-09-01","date_to":"Present","title":"Security Engineer","job_description":"Conducting security assessments and vulnerability testing."}
+          ],
+          "education":[{"title":"BSc in Cybersecurity","from_date":"2013-09-01","to_date":"2017-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Good","percentage":75},"public_speaking":{"level":"Average","percentage":60}},
+          "programming_languages":[{"name":"Python","level":"Advanced","percentage":80},{"name":"Bash","level":"Advanced","percentage":85}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"8:30 AM - 4:30 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Security Engineer"],"default_roles":["Security Engineer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"567 Birch St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"kevin.thompson@gmail.com","private_phone":"+1 415-555-1113","home_work_distance":"13 km","private_car_plate":"CA-9876-SEC"},
+        "emergency":{"contact_name":"Jennifer Thompson","contact_phone":"+1 415-555-1114"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Amanda Thompson","spouse_birthday":"1991-12-03","number_of_dependent_children":1},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Cybersecurity","school":"University of California, Berkeley"},
+        "work_permit":{"visa_no":"VISA-369852","work_permit":"WP-963852","visa_expiration_no":"2026-06-30","work_permit_expiration_date":"2027-02-28"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"kevin.thompson"},"application_settings":{"hourly_cost":58},"attendance_point_of_sale":{"pin_code":"1111","badge_id":"BADGE-111"}}
+    }
+  },
+  {
+    "id": 12,
+    "user": {
+      "general_info": {
+        "full_name": "Lisa Chen",
+        "status": "online",
+        "job_position": "Product Manager",
+        "work_email": "lisa.chen@company.com",
+        "work_phone": "+1 415-555-1221",
+        "work_mobile": "+1 415-555-1222",
+        "tags": ["product management","agile","roadmaps"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/lisa-chen.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/lisa-chen.jpg"},
+        "image": "/Images/lisa-chen.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2018-05-01","date_to":"2021-03-31","title":"Business Analyst","job_description":"Analyzed market requirements and business processes."},
+            {"date_from":"2021-04-01","date_to":"Present","title":"Product Manager","job_description":"Managing product lifecycle and coordinating development teams."}
+          ],
+          "education":[{"title":"MBA in Business Administration","from_date":"2016-09-01","to_date":"2018-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":95}},{"language_name":"Mandarin","skill_level":{"level":"Native","percentage":100}}],
+          "marketing":{"communication":{"level":"Excellent","percentage":90},"public_speaking":{"level":"Good","percentage":80}},
+          "programming_languages":[{"name":"SQL","level":"Intermediate","percentage":70},{"name":"Excel","level":"Expert","percentage":95}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Product Manager"],"default_roles":["Product Manager"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"890 Cherry St","street2":"Apt 6A","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"lisa.chen@gmail.com","private_phone":"+1 415-555-1223","home_work_distance":"7 km","private_car_plate":"CA-4455-PM"},
+        "emergency":{"contact_name":"David Chen","contact_phone":"+1 415-555-1224"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Robert Chen","spouse_birthday":"1988-09-15","number_of_dependent_children":2},
+        "education":{"certificate_level":"Master","field_of_study":"Business Administration","school":"Stanford Graduate School of Business"},
+        "work_permit":{"visa_no":"VISA-258147","work_permit":"WP-147258","visa_expiration_no":"2026-05-31","work_permit_expiration_date":"2027-01-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"lisa.chen"},"application_settings":{"hourly_cost":75},"attendance_point_of_sale":{"pin_code":"1212","badge_id":"BADGE-121"}}
+    }
+  },
+  {
+    "id": 13,
+    "user": {
+      "general_info": {
+        "full_name": "Brandon Lee",
+        "status": "online",
+        "job_position": "Full Stack Developer",
+        "work_email": "brandon.lee@company.com",
+        "work_phone": "+1 415-555-1331",
+        "work_mobile": "+1 415-555-1332",
+        "tags": ["full stack","React","Node.js","database"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/brandon-lee.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/brandon-lee.jpg"},
+        "image": "/Images/brandon-lee.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2019-08-01","date_to":"2022-01-31","title":"Frontend Developer","job_description":"Built user interfaces using React and Vue.js."},
+            {"date_from":"2022-02-01","date_to":"Present","title":"Full Stack Developer","job_description":"Developing end-to-end web applications with React and Node.js."}
+          ],
+          "education":[{"title":"BSc in Software Engineering","from_date":"2015-09-01","to_date":"2019-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}},{"language_name":"Korean","skill_level":{"level":"Native","percentage":100}}],
+          "marketing":{"communication":{"level":"Good","percentage":75},"public_speaking":{"level":"Average","percentage":65}},
+          "programming_languages":[{"name":"JavaScript","level":"Expert","percentage":95},{"name":"React","level":"Expert","percentage":90},{"name":"Node.js","level":"Advanced","percentage":85}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"10:00 AM - 6:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Full Stack Developer"],"default_roles":["Full Stack Developer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"123 Poplar St","street2":"Apt 8C","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"brandon.lee@gmail.com","private_phone":"+1 415-555-1333","home_work_distance":"11 km","private_car_plate":"CA-6677-FS"},
+        "emergency":{"contact_name":"Susan Lee","contact_phone":"+1 415-555-1334"},
+        "family_status":{"marital_status":"Single","spouse_complete_name":"","spouse_birthday":"","number_of_dependent_children":0},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Software Engineering","school":"UC San Diego"},
+        "work_permit":{"visa_no":"VISA-789456","work_permit":"WP-456789","visa_expiration_no":"2026-04-30","work_permit_expiration_date":"2027-12-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"brandon.lee"},"application_settings":{"hourly_cost":53},"attendance_point_of_sale":{"pin_code":"1313","badge_id":"BADGE-131"}}
+    }
+  },
+  {
+    "id": 14,
+    "user": {
+      "general_info": {
+        "full_name": "Amanda Rodriguez",
+        "status": "offline",
+        "job_position": "Technical Writer",
+        "work_email": "amanda.rodriguez@company.com",
+        "work_phone": "+1 415-555-1441",
+        "work_mobile": "+1 415-555-1442",
+        "tags": ["technical writing","documentation","API docs"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/amanda-rodriguez.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/amanda-rodriguez.jpg"},
+        "image": "/Images/amanda-rodriguez.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2016-04-01","date_to":"2019-09-30","title":"Content Writer","job_description":"Created marketing content and blog articles."},
+            {"date_from":"2019-10-01","date_to":"Present","title":"Technical Writer","job_description":"Writing API documentation and user guides."}
+          ],
+          "education":[{"title":"BA in English Literature","from_date":"2012-09-01","to_date":"2016-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Native","percentage":100}},{"language_name":"Spanish","skill_level":{"level":"Fluent","percentage":90}}],
+          "marketing":{"communication":{"level":"Excellent","percentage":95},"public_speaking":{"level":"Good","percentage":75}},
+          "programming_languages":[{"name":"Markdown","level":"Expert","percentage":90},{"name":"HTML","level":"Intermediate","percentage":70}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Technical Writer"],"default_roles":["Technical Writer"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"456 Sycamore St","street2":"","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"amanda.rodriguez@gmail.com","private_phone":"+1 415-555-1443","home_work_distance":"8 km","private_car_plate":"CA-8899-TW"},
+        "emergency":{"contact_name":"Miguel Rodriguez","contact_phone":"+1 415-555-1444"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Carlos Rodriguez","spouse_birthday":"1990-06-18","number_of_dependent_children":1},
+        "education":{"certificate_level":"Bachelor","field_of_study":"English Literature","school":"UC Berkeley"},
+        "work_permit":{"visa_no":"VISA-654321","work_permit":"WP-321654","visa_expiration_no":"2026-03-31","work_permit_expiration_date":"2026-11-30"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"amanda.rodriguez"},"application_settings":{"hourly_cost":42},"attendance_point_of_sale":{"pin_code":"1414","badge_id":"BADGE-141"}}
+    }
+  },
+  {
+    "id": 15,
+    "user": {
+      "general_info": {
+        "full_name": "Ryan Foster",
+        "status": "online",
+        "job_position": "Database Administrator",
+        "work_email": "ryan.foster@company.com",
+        "work_phone": "+1 415-555-1551",
+        "work_mobile": "+1 415-555-1552",
+        "tags": ["database","SQL","performance tuning","backup"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/ryan-foster.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/ryan-foster.jpg"},
+        "image": "/Images/ryan-foster.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2017-01-01","date_to":"2020-05-31","title":"Database Analyst","job_description":"Analyzed database performance and generated reports."},
+            {"date_from":"2020-06-01","date_to":"Present","title":"Database Administrator","job_description":"Managing enterprise databases and ensuring data integrity."}
+          ],
+          "education":[{"title":"BSc in Information Systems","from_date":"2013-09-01","to_date":"2017-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":95}}],
+          "marketing":{"communication":{"level":"Good","percentage":70},"public_speaking":{"level":"Average","percentage":55}},
+          "programming_languages":[{"name":"SQL","level":"Expert","percentage":95},{"name":"Oracle","level":"Advanced","percentage":85},{"name":"MySQL","level":"Advanced","percentage":80}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"8:00 AM - 4:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Database Administrator"],"default_roles":["Database Administrator"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"789 Redwood St","street2":"Apt 9D","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"ryan.foster@gmail.com","private_phone":"+1 415-555-1553","home_work_distance":"14 km","private_car_plate":"CA-1100-DB"},
+        "emergency":{"contact_name":"Karen Foster","contact_phone":"+1 415-555-1554"},
+        "family_status":{"marital_status":"Married","spouse_complete_name":"Michelle Foster","spouse_birthday":"1992-04-25","number_of_dependent_children":2},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Information Systems","school":"San Jose State University"},
+        "work_permit":{"visa_no":"VISA-987654","work_permit":"WP-654987","visa_expiration_no":"2026-02-28","work_permit_expiration_date":"2026-10-31"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"ryan.foster"},"application_settings":{"hourly_cost":56},"attendance_point_of_sale":{"pin_code":"1515","badge_id":"BADGE-151"}}
+    }
+  },
+  {
+    "id": 16,
+    "user": {
+      "general_info": {
+        "full_name": "Melissa Wang",
+        "status": "online",
+        "job_position": "Business Analyst",
+        "work_email": "melissa.wang@company.com",
+        "work_phone": "+1 415-555-1661",
+        "work_mobile": "+1 415-555-1662",
+        "tags": ["business analysis","requirements","process improvement"],
+        "company": "Tech Solutions Inc.",
+        "department": "Engineering",
+        "manager": {"name":"Jane Smith","image":"/Images/melissa-wang.jpg","id":"MGR-001"},
+        "coach": {"name":"Mark Johnson","id":"CCH-001","image":"/Images/melissa-wang.jpg"},
+        "image": "/Images/melissa-wang.jpg"
+      },
+      "general_resume": {
+        "resume": {
+          "experience":[
+            {"date_from":"2018-09-01","date_to":"2021-11-30","title":"Junior Business Analyst","job_description":"Gathered requirements and documented business processes."},
+            {"date_from":"2021-12-01","date_to":"Present","title":"Business Analyst","job_description":"Leading business analysis projects and stakeholder engagement."}
+          ],
+          "education":[{"title":"BSc in Business Administration","from_date":"2014-09-01","to_date":"2018-06-30"}]
+        },
+        "skills":{
+          "language":[{"language_name":"English","skill_level":{"level":"Fluent","percentage":90}},{"language_name":"Mandarin","skill_level":{"level":"Native","percentage":100}}],
+          "marketing":{"communication":{"level":"Excellent","percentage":85},"public_speaking":{"level":"Good","percentage":75}},
+          "programming_languages":[{"name":"Excel","level":"Expert","percentage":90},{"name":"Power BI","level":"Advanced","percentage":80}]
+        }
+      },
+      "work_info":{
+        "work_address":"Tech Solutions Inc. (San Francisco)\n250 Executive Park Blvd, Suite 3400\nSan Francisco, CA 94134\nUSA",
+        "work_location":"San Francisco Office",
+        "approvers":{"time_off":"Jane Smith","timesheet":"Mark Johnson"},
+        "schedule":{"working_hours":"9:00 AM - 5:00 PM","timezone":"PST (UTC-8)"},
+        "planning":{"roles":["Business Analyst"],"default_roles":["Business Analyst"]}
+      },
+      "private_info":{
+        "private_contact":{"private_address":{"street":"321 Magnolia St","street2":"Apt 10B","city":"San Francisco","state":"CA","zip":"94107","country":"USA"},"private_email":"melissa.wang@gmail.com","private_phone":"+1 415-555-1663","home_work_distance":"6 km","private_car_plate":"CA-2211-BA"},
+        "emergency":{"contact_name":"James Wang","contact_phone":"+1 415-555-1664"},
+        "family_status":{"marital_status":"Single","spouse_complete_name":"","spouse_birthday":"","number_of_dependent_children":0},
+        "education":{"certificate_level":"Bachelor","field_of_study":"Business Administration","school":"UC Davis"},
+        "work_permit":{"visa_no":"VISA-159357","work_permit":"WP-753159","visa_expiration_no":"2026-01-31","work_permit_expiration_date":"2026-09-30"}
+      },
+      "settings":{"status":{"employee_type":"Full-time","related_user":"melissa.wang"},"application_settings":{"hourly_cost":48},"attendance_point_of_sale":{"pin_code":"1616","badge_id":"BADGE-161"}}
+    }
   }
   
 ]

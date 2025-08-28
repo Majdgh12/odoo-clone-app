@@ -16,32 +16,32 @@ const ViewTypeSelector: React.FC<ViewTypeSelectorProps> = ({ onViewTypeChange })
     };
 
     return (
-        <div className="flex items-center bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center bg-gray-200 rounded-lg p-1">
             <button
                 onClick={() => handleViewChange('grid')}
-                className={`p-2 rounded-md transition-colors ${selectedView === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200 '
+                className={`p-2 rounded-md transition-colors ${selectedView === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-300'
                     }`}
                 title="Grid View"
             >
-                <Grid3X3 className="w-4 h-4" />
+                <Grid3X3 className="w-4 h-4 text-black" />
             </button>
 
             <button
                 onClick={() => handleViewChange('list')}
-                className={`p-2 rounded-md transition-colors ${selectedView === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
+                className={`p-2 rounded-md transition-colors ${selectedView === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-300'
                     }`}
                 title="List View"
             >
-                <List className="w-4 h-4" />
+                <List className="w-4 h-4 text-black" />
             </button>
 
             <button
                 onClick={() => handleViewChange('kanban')}
-                className={`p-2 rounded-md transition-colors ${selectedView === 'kanban' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
+                className={`p-2 rounded-md transition-colors ${selectedView === 'kanban' ? 'bg-white shadow-sm' : 'hover:bg-gray-300'
                     }`}
                 title="More Views"
             >
-                <MoreHorizontal className="w-4 h-4" />
+                <MoreHorizontal className="w-4 h-4 text-black" />
             </button>
         </div>
     );
