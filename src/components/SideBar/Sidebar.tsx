@@ -120,65 +120,21 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <div className={`t-16 h-screen overflow-hidden bg-white shadow-lg transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}   border-r border-gray-300 pt-16` }>
             {/* Header with collapse button */}
-            {/* <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                {!isCollapsed && <h2 className="text-lg font-semibold text-gray-800">Filters</h2>} */}
                <div className='flex justify-end p-2 mb-0'>
                <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="p-1 rounded-md hover:bg-gray-100 transition-colors"
                 >
-                    <ChevronLeft className={`w-5 h-5 text-gray-600 transition-transform ${isCollapsed ? 'rotate-180' : ''} `} />
+                    <ChevronLeft className={`w-5 h-5 text-black transition-transform ${isCollapsed ? 'rotate-180' : ''} `} />
                 </button>     
                </div>
-
-            {/* </div> */}
 
             {!isCollapsed && (
                 <div className="p-2 space-y-0">
                     {/* COMPANY Section */}
                     <div>
-                        {/* <div className="flex items-center mb-3">
-                            <Building2 className="w-5 h-5 text-[#65435c] mr-2" />
-                            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">COMPANY</h3>
-                        </div> */}
-
                         <div className="space-y-1">
-                            {/* All Companies */}
-                            {/* <button
-                                onClick={() => handleCompanyFilter('all')}
-                                className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${selectedFilters.company === 'all' || !selectedFilters.company
-                                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                                        : 'text-gray-600 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span>All</span>
-                                    <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                                        {counts.total}
-                                    </span>
-                                </div>
-                            </button> */}
-
-                            {/* Individual Companies */}
-                            {/* {companies.map((company) => (
-                                <button
-                                    key={company}
-                                    onClick={() => handleCompanyFilter(company)}
-                                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedFilters.company === company
-                                            ? 'bg-teal-50 text-teal-700 border border-teal-200 font-medium'
-                                            : 'text-gray-600 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <span className="truncate">
-                                            {company.length > 20 ? `${company.substring(0, 17)}...` : company}
-                                        </span>
-                                        <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium ml-2">
-                                            {getFilteredCount('company', company)}
-                                        </span>
-                                    </div>
-                                </button>
-                            ))} */}
+                            {/* All Companies - commented out sections remain commented */}
                         </div>
                     </div>
 
@@ -186,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <div>
                         <div className="flex items-center mb-3">
                             <Users2 className="w-5 h-5 text-[#65435c] mr-2" />
-                            <h3 className="text-sm font-semibold uppercase tracking-wide">DEPARTMENT</h3>
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-black">DEPARTMENT</h3>
                         </div>
 
                         <div className="space-y-1">
@@ -199,8 +155,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     }`}
                             >
                                 <div className="flex items-center justify-between">
-                                    <span className='px-2 py-1.5 font-semibold'>All</span>
-                                    <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
+                                    <span className='px-2 py-1.5 font-semibold text-black'>All</span>
+                                    <span className="bg-gray-200 text-black px-2 py-1 rounded-full text-xs font-medium">
                                         {counts.total}
                                     </span>
                                 </div>
@@ -213,15 +169,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                                     onClick={() => handleDepartmentFilter(department)}
                                     className={`w-full text-left mt-0.5 px-3 py-1.5 rounded-md text-sm transition-colors ${selectedFilters.department === department
                                             ? 'bg-teal-50 text-black border font-medium'
-                                            : ' hover:bg-gray-200'
+                                            : 'text-black hover:bg-gray-200'
                                         }`}
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center">
-                                            <ChevronRight className="w-3 h-3 mr-1 text-gray-400" />
-                                            <span>{department}</span>
+                                            <ChevronRight className="w-3 h-3 mr-1 text-black" />
+                                            <span className="text-black">{department}</span>
                                         </div>
-                                        <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                                        <span className="bg-gray-200 text-black px-2 py-0.5 rounded-full text-xs font-medium">
                                             {getFilteredCount('department', department)}
                                         </span>
                                     </div>
@@ -240,7 +196,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* Collapsed state icons */}
             {isCollapsed && (
                 <div className="p-2 space-y-4 mt-4">
-
                     <div className="flex justify-center">
                         <Users2 className="w-6 h-6 text-[#65435c]" />
                     </div>
