@@ -1,307 +1,101 @@
 "use client";
 
-import React from 'react';
-import type { Employee } from '../../lib/types';
+import React from "react";
+import type { Employee, PrivateInfo } from "../../lib/types";
 
 interface PrivateInfoTabProps {
     employee: Employee;
 }
 
 const PrivateInfoTab: React.FC<PrivateInfoTabProps> = ({ employee }) => {
-    const { private_info } = employee.user;
+    const private_info: PrivateInfo = employee.user?.private_info ?? {} as PrivateInfo;
+
+
+    if (!private_info) {
+        return <p className="text-gray-500">No private information available.</p>;
+    }
+
+    const { education, emergency, family_status, private_contact, work_permit } =
+        private_info;
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
             {/* Left Column */}
             <div className="space-y-8">
-
-                {/* Private Contact */}
+                {/* Education */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">PRIVATE CONTACT</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Private Address <span className="text-blue-500">?</span>
-                                </span>
-                                <div className="ml-4 space-y-1">
-                                    <p className="text-sm text-gray-900">{private_info.private_contact.private_address.street}</p>
-                                    {private_info.private_contact.private_address.street2 && (
-                                        <p className="text-sm text-gray-900">{private_info.private_contact.private_address.street2}</p>
-                                    )}
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <p className="text-sm text-gray-900">{private_info.private_contact.private_address.city}</p>
-                                        <p className="text-sm text-gray-900">{private_info.private_contact.private_address.state}</p>
-                                        <p className="text-sm text-gray-900">{private_info.private_contact.private_address.zip}</p>
-                                    </div>
-                                    <p className="text-sm text-gray-900">{private_info.private_contact.private_address.country}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Private Email <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.private_contact.private_email}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Private Phone <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.private_contact.private_phone}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Bank Account <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Home-Work Distance <span className="text-blue-500">?</span>
-                                </span>
-                                <div className="ml-4 flex items-center">
-                                    <span className="text-sm text-gray-900">{private_info.private_contact.home_work_distance}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Private Car Plate <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.private_contact.private_car_plate}</span>
-                            </div>
-                        </div>
+                    <h3 className="text-lg font-semibold text-black mb-4">EDUCATION</h3>
+                    <div className="space-y-2 text-black">
+                        <p>Certificate Level: {education?.certificate_level ?? "-"}</p>
+                        <p>Field of Study: {education?.field_of_study ?? "-"}</p>
+                        <p>School: {education?.school ?? "-"}</p>
                     </div>
                 </div>
 
                 {/* Emergency */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">EMERGENCY</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Contact Name <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.emergency.contact_name}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Contact Phone <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.emergency.contact_phone}</span>
-                            </div>
-                        </div>
+                    <h3 className="text-lg font-semibold text-black mb-4">EMERGENCY</h3>
+                    <div className="space-y-2 text-black">
+                        <p>Contact Name: {emergency?.contact_name ?? "-"}</p>
+                        <p>Contact Phone: {emergency?.contact_phone ?? "-"}</p>
                     </div>
                 </div>
 
                 {/* Family Status */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">FAMILY STATUS</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Marital Status <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.family_status.marital_status}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Number of Dependent Children <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.family_status.number_of_dependent_children}</span>
-                            </div>
-                        </div>
+                    <h3 className="text-lg font-semibold text-black mb-4">FAMILY STATUS</h3>
+                    <div className="space-y-2 text-black">
+                        <p>Marital Status: {family_status?.marital_status ?? "-"}</p>
+                        <p>Dependent Children: {family_status?.dependent_children ?? "-"}</p>
+                        <p>Spouse Name: {family_status?.spouse_name ?? "-"}</p>
+                        <p>
+                            Spouse Birthday:{" "}
+                            {family_status?.spouse_birthday
+                                ? new Date(family_status.spouse_birthday).toLocaleDateString()
+                                : "-"}
+                        </p>
                     </div>
                 </div>
             </div>
 
             {/* Right Column */}
             <div className="space-y-8">
-
-                {/* Citizenship */}
+                {/* Private Contact */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">CITIZENSHIP</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Nationality (Country) <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.private_contact.private_address.country}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Identification No <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    SSN No <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Passport No <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Gender <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Date of Birth <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Place of Birth <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Country of Birth <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">-</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Education */}
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">EDUCATION</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Certificate Level <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.education.certificate_level}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Field of Study <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.education.field_of_study}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    School <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.education.school}</span>
-                            </div>
-                        </div>
+                    <h3 className="text-lg font-semibold text-black mb-4">
+                        PRIVATE CONTACT
+                    </h3>
+                    <div className="space-y-2 text-black">
+                        <p>Street: {private_contact?.street ?? "-"}</p>
+                        <p>City: {private_contact?.city ?? "-"}</p>
+                        <p>State: {private_contact?.state ?? "-"}</p>
+                        <p>ZIP: {private_contact?.zip ?? "-"}</p>
+                        <p>Country: {private_contact?.country ?? "-"}</p>
+                        <p>Email: {private_contact?.private_email ?? "-"}</p>
+                        <p>Phone: {private_contact?.private_phone ?? "-"}</p>
                     </div>
                 </div>
 
                 {/* Work Permit */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">WORK PERMIT</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Visa No <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.work_permit.visa_no}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Work Permit No <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.work_permit.work_permit}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Visa Expiration Date <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.work_permit.visa_expiration_no}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Work Permit Expiration Date <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{private_info.work_permit.work_permit_expiration_date}</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Work Permit <span className="text-blue-500">?</span>
-                                </span>
-                                <div className="ml-4 flex items-center">
-                                    <span className="text-sm text-gray-500 mr-2">Upload your file</span>
-                                </div>
-                            </div>
-                        </div>
+                    <h3 className="text-lg font-semibold text-black mb-4">
+                        WORK PERMIT
+                    </h3>
+                    <div className="space-y-2 text-black">
+                        <p>Visa No: {work_permit?.visa_no ?? "-"}</p>
+                        <p>Work Permit: {work_permit?.work_permit ?? "-"}</p>
+                        <p>
+                            Permit Expiration:{" "}
+                            {work_permit?.permit_expiration
+                                ? new Date(work_permit.permit_expiration).toLocaleDateString()
+                                : "-"}
+                        </p>
+                        <p>
+                            Visa Expiration:{" "}
+                            {work_permit?.visa_expiration
+                                ? new Date(work_permit.visa_expiration).toLocaleDateString()
+                                : "-"}
+                        </p>
                     </div>
                 </div>
             </div>

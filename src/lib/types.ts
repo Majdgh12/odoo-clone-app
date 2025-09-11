@@ -1,5 +1,7 @@
 // types.ts - TypeScript interfaces for Employee Management System
 
+import { ReactNode } from "react";
+
 export interface Manager {
   name: string;
   image: string;
@@ -12,6 +14,7 @@ export interface Coach {
   image: string;
 }
 
+
 export interface GeneralInfo {
   full_name: string;
   job_position: string;
@@ -20,7 +23,7 @@ export interface GeneralInfo {
   work_mobile: string;
   tags: string[];
   company: string;
-  department: string;
+  department: string | { id: string; name: string };
   manager: Manager;
   coach: Coach;
   image: string;
@@ -51,8 +54,29 @@ export interface SkillLevel {
 }
 
 export interface Language {
+  level: ReactNode;
+  percentage(percentage: any): unknown;
   language_name: string;
   skill_level: SkillLevel;
+}
+
+
+export interface ProgrammingLanguage {
+  name: string;
+  level: string;
+  percentage: number;
+}
+
+export interface Skills {
+  other_skills: any;
+  language: Language[];
+  marketing: Marketing;
+  programming_languages: ProgrammingLanguage[];
+}
+
+export interface GeneralResume {
+  resume: Resume;
+  skills: Skills;
 }
 
 export interface MarketingSkill {
@@ -64,24 +88,6 @@ export interface Marketing {
   communication: MarketingSkill;
   public_speaking: MarketingSkill;
 }
-
-export interface ProgrammingLanguage {
-  name: string;
-  level: string;
-  percentage: number;
-}
-
-export interface Skills {
-  language: Language[];
-  marketing: Marketing;
-  programming_languages: ProgrammingLanguage[];
-}
-
-export interface GeneralResume {
-  resume: Resume;
-  skills: Skills;
-}
-
 export interface Approvers {
   time_off: string;
   timesheet: string;
@@ -100,9 +106,11 @@ export interface Planning {
 export interface WorkInfo {
   work_address: string;
   work_location: string;
-  approvers: Approvers;
-  schedule: Schedule;
-  planning: Planning;
+  working_hours: string;
+  timezone: string;
+  approver_timeoff_id: string;
+  approver_timesheet_id: string;
+  employee_id: string;
 }
 
 export interface PrivateAddress {
@@ -115,6 +123,11 @@ export interface PrivateAddress {
 }
 
 export interface PrivateContact {
+  zip: string;
+  country: string;
+  city: string;
+  state: string;
+  street: string;
   private_address: PrivateAddress;
   private_email: string;
   private_phone: string;
@@ -128,6 +141,8 @@ export interface Emergency {
 }
 
 export interface FamilyStatus {
+  spouse_name: string;
+  dependent_children: string;
   marital_status: string;
   spouse_complete_name: string;
   spouse_birthday: string;
@@ -141,6 +156,8 @@ export interface EducationInfo {
 }
 
 export interface WorkPermit {
+  permit_expiration: any;
+  visa_expiration: any;
   visa_no: string;
   work_permit: string;
   visa_expiration_no: string;
@@ -183,8 +200,10 @@ export interface User {
   settings: Settings;
 }
 
+
 export interface Employee {
-  id: number;
+  id: number | string;
+    _id?: string; 
   user: User;
 }
 
