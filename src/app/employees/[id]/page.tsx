@@ -1,17 +1,12 @@
 // app/employees/[id]/page.tsx
-
 import EmployeeGeneral from "@/components/EmployeeGeneral";
 
-export default function EmployeeDetailsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EmployeeDetailsPage({ params }: { params: { id: string } }) {
+  const { id } = params;
 
   return (
     <div>
-
-      <EmployeeGeneral />
+      <EmployeeGeneral employeeId={String(id)} />
     </div>
   );
 }
