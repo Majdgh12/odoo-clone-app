@@ -3,7 +3,14 @@
  // path to route.ts
 
 
-import type { Employee,  FilterOptions } from "@/lib/types";
+import type { Employee } from "@/lib/types";
+// If FilterOptions is needed, define it below or import from the correct location
+export type FilterOptions = {
+  department?: string;
+  position?: string;
+  search?: string;
+  tags?: string[];
+};
 
 
 let employeeArray: Employee[] = [];
@@ -35,11 +42,13 @@ export const getEmployees = (): Employee[] => employeeArray;
  */
 
 export async function getEmployeeById(id: string): Promise<Employee | null> {
-  const emp = employeeArray.find(
-    (e) => e.id === id || (e as any)._id === id
-  );
+  const emp = employeeArray.find((e: any) => e._id?.toString() === id);
+  console.log("Looking for employee ID:", id);
+console.log("Available IDs:", employeeArray.map((e: any) => e._id));
+
   return emp || null;
 }
+
 
 
 

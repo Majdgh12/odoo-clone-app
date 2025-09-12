@@ -1,10 +1,9 @@
 // components/EmployeeGeneral.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Employee } from "../lib/types";
-import { getEmployees, getEmployeeById } from "../lib/getEmployees";
 import ResumeTab from "./EmployeeNotebook/ResumeTab";
 import WorkInfoTab from "./EmployeeNotebook/WorkInfoTab";
 import PrivateInfoTab from "./EmployeeNotebook/PrivateInfoTab";
@@ -12,16 +11,14 @@ import SettingsTab from "./EmployeeNotebook/SettingsTab";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface EmployeeGeneralProps {
-  employeeId: string;
+  employee: Employee | null;
+  employees: Employee[];
 }
 
 const toStringField = (val: any): string => {
-  // If it's a string, return it.
   if (typeof val === "string") return val;
-  // If it's an object with a `name` property, return name.
   if (val && typeof val === "object") {
     if (typeof val.name === "string") return val.name;
-    // fallback: try id or company or stringify
     if (typeof val.company === "string") return val.company;
     if (val._id) return String(val._id);
     try {
@@ -46,89 +43,10 @@ const idOf = (obj: any): string | undefined => {
   return obj.id ?? obj._id ?? obj.toString?.();
 };
 
-const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
+const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }) => {
   const router = useRouter();
-  const [employee, setEmployee] = useState<Employee | null>(null);
-  const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("resume");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // getEmployees may be sync or async depending on your lib
-        const employees = await (getEmployees() as Promise<Employee[]> | Employee[]);
-        const employeesArr = Array.isArray(employees) ? employees : [employees];
-        console.log("Fetched employees:", employeesArr);
-        
-        if (!mounted) return;
-        setAllEmployees(employeesArr);
-
-
-        // get employee by id (your function should return normalized object)
-        const emp = await getEmployeeById(employeeId);
-        if (!mounted) return;
-
-        if (!emp) {
-          setEmployee(null);
-          setCurrentIndex(0);
-          setLoading(false);
-          return;
-        }
-
-        setEmployee(emp);
-
-        // find the index by either id or _id (normalize both sides to string)
-        const empId = idOf(emp);
-        const index = employeesArr.findIndex((e) => {
-          const eId = idOf(e);
-          return eId !== undefined && empId !== undefined && String(eId) === String(empId);
-        });
-
-        setCurrentIndex(index !== -1 ? index : 0);
-      } catch (err) {
-        console.error("Failed to load employees:", err);
-        setEmployee(null);
-        setAllEmployees([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    fetchData();
-    return () => {
-      mounted = false;
-    };
-  }, [employeeId]);
-
-  const navigateToEmployee = (direction: "prev" | "next") => {
-    if (!allEmployees.length) return;
-
-    const lastIndex = allEmployees.length - 1;
-    let newIndex =
-      direction === "next"
-        ? currentIndex < lastIndex
-          ? currentIndex + 1
-          : 0
-        : currentIndex > 0
-        ? currentIndex - 1
-        : lastIndex;
-
-    const newEmployee = allEmployees[newIndex];
-    const newId = idOf(newEmployee);
-    if (newId) router.push(`/employees/${newId}`);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Loading employee details...</div>
-      </div>
-    );
-  }
+  
 
   if (!employee) {
     return (
@@ -140,6 +58,27 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
       </div>
     );
   }
+
+  const currentIndex = employees.findIndex(
+    (e) => String(idOf(e)) === String(idOf(employee))
+  );
+
+  const navigateToEmployee = (direction: "prev" | "next") => {
+    if (!employees.length) return;
+    const lastIndex = employees.length - 1;
+    let newIndex =
+      direction === "next"
+        ? currentIndex < lastIndex
+          ? currentIndex + 1
+          : 0
+        : currentIndex > 0
+        ? currentIndex - 1
+        : lastIndex;
+
+    const newEmployee = employees[newIndex];
+    const newId = idOf(newEmployee);
+    if (newId) router.push(`/employees/${newId}`);
+  };
 
   const info = employee.user?.general_info ?? {};
   const departmentText = toStringField(info.department);
@@ -170,19 +109,19 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
             <button
               onClick={() => navigateToEmployee("prev")}
               className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={allEmployees.length <= 1}
+              disabled={employees.length <= 1}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
             <span className="text-sm text-gray-700 font-medium">
-              {currentIndex + 1} / {allEmployees.length}
+              {currentIndex + 1} / {employees.length}
             </span>
 
             <button
               onClick={() => navigateToEmployee("next")}
               className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={allEmployees.length <= 1}
+              disabled={employees.length <= 1}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -198,11 +137,15 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 mr-3">{info.full_name ?? "—"}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mr-3">
+                  {info.full_name ?? "—"}
+                </h1>
                 <span className="text-blue-500 text-xl">🔗</span>
               </div>
 
-              <p className="text-lg text-gray-600 mb-8">{info.job_position ?? "—"}</p>
+              <p className="text-lg text-gray-600 mb-8">
+                {info.job_position ?? "—"}
+              </p>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-6">
                 <div className="space-y-6">
@@ -211,7 +154,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                     <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
                       Work Email <span className="text-blue-500">?</span>
                     </span>
-                    <span className="text-sm text-gray-900 ml-4">{info.work_email ?? "—"}</span>
+                    <span className="text-sm text-gray-900 ml-4">
+                      {info.work_email ?? "—"}
+                    </span>
                   </div>
 
                   {/* Work Phone */}
@@ -219,7 +164,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                     <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
                       Work Phone <span className="text-blue-500">?</span>
                     </span>
-                    <span className="text-sm text-gray-900 ml-4">{info.work_phone ?? "—"}</span>
+                    <span className="text-sm text-gray-900 ml-4">
+                      {info.work_phone ?? "—"}
+                    </span>
                   </div>
 
                   {/* Work Mobile */}
@@ -227,7 +174,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                     <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
                       Work Mobile <span className="text-blue-500">?</span>
                     </span>
-                    <span className="text-sm text-gray-900 ml-4">{info.work_mobile ?? "—"}</span>
+                    <span className="text-sm text-gray-900 ml-4">
+                      {info.work_mobile ?? "—"}
+                    </span>
                   </div>
 
                   {/* Tags */}
@@ -238,7 +187,10 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                     <div className="ml-4 flex flex-wrap gap-1">
                       {tags.length > 0 ? (
                         tags.map((tag, idx) => (
-                          <span key={idx} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                          <span
+                            key={idx}
+                            className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
+                          >
                             {tag}
                           </span>
                         ))
@@ -253,7 +205,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                     <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
                       Company <span className="text-blue-500">?</span>
                     </span>
-                    <span className="text-sm text-gray-900 ml-4">{companyText || "—"}</span>
+                    <span className="text-sm text-gray-900 ml-4">
+                      {companyText || "—"}
+                    </span>
                   </div>
                 </div>
 
@@ -264,7 +218,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                     <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
                       Department <span className="text-blue-500">?</span>
                     </span>
-                    <span className="text-sm text-gray-900 ml-4">{departmentText || "—"}</span>
+                    <span className="text-sm text-gray-900 ml-4">
+                      {departmentText || "—"}
+                    </span>
                   </div>
 
                   {/* Manager */}
@@ -279,9 +235,14 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                             src={info.manager.image}
                             alt={info.manager.name}
                             className="w-6 h-6 rounded-full mr-2"
-                            onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/24x24.png?text=👤")}
+                            onError={(e) =>
+                              (e.currentTarget.src =
+                                "https://via.placeholder.com/24x24.png?text=👤")
+                            }
                           />
-                          <span className="text-sm text-gray-900">{info.manager.name}</span>
+                          <span className="text-sm text-gray-900">
+                            {info.manager.name}
+                          </span>
                         </>
                       ) : (
                         <span className="text-sm text-gray-400">—</span>
@@ -301,9 +262,14 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                             src={info.coach.image}
                             alt={info.coach.name}
                             className="w-6 h-6 rounded-full mr-2"
-                            onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/24x24.png?text=👤")}
+                            onError={(e) =>
+                              (e.currentTarget.src =
+                                "https://via.placeholder.com/24x24.png?text=👤")
+                            }
                           />
-                          <span className="text-sm text-gray-900">{info.coach.name}</span>
+                          <span className="text-sm text-gray-900">
+                            {info.coach.name}
+                          </span>
                         </>
                       ) : (
                         <span className="text-sm text-gray-400">—</span>
@@ -320,7 +286,10 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                 src={info.image}
                 alt={info.full_name}
                 className="w-32 h-40 rounded-lg object-cover border border-gray-200"
-                onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/128x160.png?text=No+Photo")}
+                onError={(e) =>
+                  (e.currentTarget.src =
+                    "https://via.placeholder.com/128x160.png?text=No+Photo")
+                }
               />
             </div>
           </div>
@@ -339,7 +308,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employeeId }) => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  activeTab === tab.id
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
                 {tab.label}
