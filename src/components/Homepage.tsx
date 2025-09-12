@@ -137,7 +137,7 @@ export default function Home() {
         );
       })
     ) : (
-      <div className="text-center text-gray-500">No employees found.</div>
+      <p className="text-gray-500 text-center mt-4">No employees found.</p>
     );
   return (
     <div className="h-screen bg-gray-50 flex">
