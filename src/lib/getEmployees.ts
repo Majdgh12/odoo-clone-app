@@ -6,8 +6,8 @@
 import type { Employee,  FilterOptions } from "@/lib/types";
 
 
-let employeeArray: Employee[] = [];
-
+let employeeArray: Employee[] = [];//global array store the employees after fetching from backend
+// Function to fetch employees from backend and initialize the array
 export const initializeEmployees = async (): Promise<Employee[]> => {
   try {
     const res = await fetch("http://localhost:5000/api/employees"); // backend URL
@@ -15,7 +15,7 @@ export const initializeEmployees = async (): Promise<Employee[]> => {
       throw new Error("Failed to fetch employees");
     }
 
-    const data: Employee[] = await res.json();
+    const data: Employee[] = await res.json();//convert the response to json into Employee array
     employeeArray = Array.isArray(data) ? data : [data]; // ensure it's an array
     console.log("Employees fetched:", employeeArray.length);
     return employeeArray;
