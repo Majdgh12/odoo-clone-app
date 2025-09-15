@@ -7,6 +7,7 @@ import type { Employee } from "@/lib/types";
 import EmployeeCard from "@/components/EmployeeCard";
 import EmployeeListView from "@/components/EmployeeListView";
 import { initializeEmployees } from "@/lib/getEmployees";
+import router from "next/router";
 
 export default function Home() {
   const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
@@ -21,9 +22,18 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(0);
   const itemsPerPage = 9;
+  const [role, setRole] = useState<string>("");
+
+
+
 
   // Fetch employees on mount
   useEffect(() => {
+    const storedRole = localStorage.getItem("userRole");
+  if (storedRole) setRole(storedRole);
+
+  const token = localStorage.getItem("authToken");
+  if (!token) router.push("/login"); // optional protection
     const fetchEmployees = async () => {
       try {
         const employees = await initializeEmployees();
@@ -122,6 +132,7 @@ export default function Home() {
         const key = emp.id || (emp as any)._id || `emp-${index}`;
 
         return (
+          
           <div key={key} className="w-full max-w-[420px]">
             <EmployeeCard
               id={emp.id || (emp as any)._id || ""}
@@ -140,6 +151,7 @@ export default function Home() {
       <p className="text-gray-500 text-center mt-4">No employees found.</p>
     );
   return (
+    
     <div className="h-screen bg-gray-50 flex">
       <aside className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
         <Sidebar
@@ -174,6 +186,8 @@ export default function Home() {
         </header>
 
         <section className="flex-1 bg-gray-50 overflow-y-auto overflow-x-hidden pt-16 lg:pt-12">
+          <p className="text-gray-700 text-lg ml-4">I am the {role}</p>
+
           {mounted && displayMode === "grid" && (
             <div className="p-4 mt-2">
               {viewType === "list" ? (
