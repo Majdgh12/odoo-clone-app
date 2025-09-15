@@ -45,7 +45,7 @@ export default function EmployeeCard({
         {/* Profile Image */}
         <div className="relative w-20 h-20 flex-shrink-0 overflow-visible z-0">
           <div 
-            className="relative w-full h-full rounded-lg overflow-hidden"
+            className="relative w-full h-full rounded-lg "
             onMouseEnter={() => setIsImageHovered(true)}
             onMouseLeave={() => setIsImageHovered(false)}
           >
@@ -66,7 +66,12 @@ export default function EmployeeCard({
           </div>
 
           {/* Hover preview above the image - SQUARE */}
-          <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-32 h-32 rounded-lg overflow-hidden border shadow-lg bg-white transition-opacity duration-200 z-10 pointer-events-none ${isImageHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <div
+           className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
+              w-32 h-32 rounded-lg border shadow-lg bg-white 
+              transition-opacity duration-200 z-10 pointer-events-none 
+              ${isImageHovered ? 'opacity-100' : 'opacity-0'}`}>
+
             {useFallback ? (
               <img
                 src={image}
