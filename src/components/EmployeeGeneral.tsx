@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // components/EmployeeGeneral.tsx
 "use client";
 
@@ -15,7 +16,9 @@ interface EmployeeGeneralProps {
   employees: Employee[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toStringField = (val: any): string => {
+// sourcery skip: use-braces
   if (typeof val === "string") return val;
   if (val && typeof val === "object") {
     if (typeof val.name === "string") return val.name;
@@ -30,7 +33,9 @@ const toStringField = (val: any): string => {
   return "";
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const normalizeTags = (tags: any): string[] => {
+// sourcery skip: use-braces
   if (!tags) return [];
   if (Array.isArray(tags)) {
     return tags.map((t) => (typeof t === "string" ? t : t?.name ?? String(t)));
@@ -38,6 +43,8 @@ const normalizeTags = (tags: any): string[] => {
   return [typeof tags === "string" ? tags : tags?.name ?? String(tags)];
 };
 
+// sourcery skip: use-braces
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const idOf = (obj: any): string | undefined => {
   if (!obj) return undefined;
   return obj.id ?? obj._id ?? obj.toString?.();
@@ -46,6 +53,7 @@ const idOf = (obj: any): string | undefined => {
 const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("resume");
+  console.log("EmployeeGeneral render", { employee, employees });
   
 
   if (!employee) {
@@ -64,9 +72,10 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
   );
 
   const navigateToEmployee = (direction: "prev" | "next") => {
+// sourcery skip: use-braces
     if (!employees.length) return;
     const lastIndex = employees.length - 1;
-    let newIndex =
+    const newIndex =
       direction === "next"
         ? currentIndex < lastIndex
           ? currentIndex + 1

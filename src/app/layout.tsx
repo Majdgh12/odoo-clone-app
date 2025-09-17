@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Employee Management System",
@@ -17,7 +18,7 @@ export default function RootLayout({
         className="antialiased font-sans"
         suppressHydrationWarning={true}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

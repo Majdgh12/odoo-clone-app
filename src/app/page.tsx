@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,34 +15,18 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
 
-      const data = await res.json();
-
-      if (res.ok && data.token) {
-        // Store token and role
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("userRole", data.user.role);
-        localStorage.setItem("userEmail", data.user.email);
-
-        // Redirect to home
-        router.push("/home");
-      } else {
-        alert(data.message || "Invalid email or password");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+    if (res?.ok) {
+      router.push("/home");
+    } else {
+      alert("Invalid email or password");
     }
+    setLoading(false);
   };
 
   return (
@@ -52,7 +37,6 @@ export default function LoginPage() {
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          {/* Email */}
           <div className="flex items-center border rounded-lg px-3 py-2">
             <Mail className="text-purple-500 mr-2" size={18} />
             <input
@@ -65,7 +49,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
           <div className="flex items-center border rounded-lg px-3 py-2">
             <Lock className="text-purple-500 mr-2" size={18} />
             <input

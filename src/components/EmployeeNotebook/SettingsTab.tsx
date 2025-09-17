@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import type { Employee } from '../../lib/types';
+import React from "react";
+import type { Employee } from "../../lib/types";
 
 interface SettingsTabProps {
     employee: Employee;
@@ -10,86 +10,58 @@ interface SettingsTabProps {
 const SettingsTab: React.FC<SettingsTabProps> = ({ employee }) => {
     const settings = employee.user?.settings ?? {};
 
-    const status = settings.status ?? {};
-    const application_settings = settings.application_settings ?? {};
-    const attendance_point_of_sale = settings.attendance_point_of_sale ?? {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const renderObject = (obj: any) => {
+        if (!obj || Object.keys(obj).length === 0) return <p className="text-gray-500">No data</p>;
+
+        return (
+            <div className="space-y-4">
+                {Object.entries(obj).map(([key, value]) => {
+                    if (value && typeof value === "object" && !Array.isArray(value)) {
+                        return (
+                            <div key={key} className="ml-4">
+                                <h4 className="text-gray-700 font-medium capitalize">{formatLabel(key)}</h4>
+                                {renderObject(value)}
+                            </div>
+                        );
+                    } else if (Array.isArray(value)) {
+                        return (
+                            <div key={key} className="ml-4">
+                                <h4 className="text-gray-700 font-medium capitalize">{formatLabel(key)}</h4>
+                                <ul className="list-disc list-inside ml-2">
+                                    {value.map((v, idx) => (
+                                        <li key={idx}>{typeof v === "object" ? JSON.stringify(v) : String(v)}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                    } else {
+                        return (
+                            <div key={key} className="flex items-start">
+                                <span className="text-sm text-gray-500 w-40 flex-shrink-0 mt-1 capitalize">{formatLabel(key)}</span>
+                                <span className="text-sm text-gray-900 ml-4">
+                                    {value === null || value === undefined
+                                        ? "-"
+                                        : typeof value === "object"
+                                            ? JSON.stringify(value)
+                                            : String(value)}
+                                </span>
+                            </div>
+                        );
+                    }
+                })}
+            </div>
+        );
+    };
+
+    const formatLabel = (label: string) => {
+        return label.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-            {/* Left Column */}
-            <div className="space-y-8">
-
-                {/* Status */}
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">STATUS</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-start">
-                            <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                Employee Type <span className="text-blue-500">?</span>
-                            </span>
-                            <span className="text-sm text-gray-900 ml-4">{status.employee_type ?? '-'}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Related User <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{status.related_user ?? '-'}</span>
-                            </div>
-                            <button className="text-teal-600 hover:text-teal-700 text-sm font-medium">
-                                Create User
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Application Settings */}
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">APPLICATION SETTINGS</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-start">
-                            <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                Hourly Cost <span className="text-blue-500">?</span>
-                            </span>
-                            <div className="ml-4 flex items-center">
-                                <span className="text-sm text-gray-900">{application_settings.hourly_cost ?? '0'}.00</span>
-                                <span className="text-sm text-gray-500 ml-2">J.J</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-8">
-
-                {/* Attendance/Point of Sale */}
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">ATTENDANCE/POINT OF SALE</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-start">
-                            <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                PIN Code <span className="text-blue-500">?</span>
-                            </span>
-                            <span className="text-sm text-gray-900 ml-4">{attendance_point_of_sale.pin_code ?? '-'}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-start">
-                                <span className="text-sm text-gray-500 w-32 flex-shrink-0 mt-1">
-                                    Badge ID <span className="text-blue-500">?</span>
-                                </span>
-                                <span className="text-sm text-gray-900 ml-4">{attendance_point_of_sale.badge_id ?? '-'}</span>
-                            </div>
-                            <button className="text-teal-600 hover:text-teal-700 text-sm font-medium">
-                                Generate
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="space-y-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">SETTINGS</h3>
+            {renderObject(settings)}
         </div>
     );
 };

@@ -1,7 +1,7 @@
 // types.ts - TypeScript interfaces for Employee Management System
-
 import { ReactNode } from "react";
 
+// Manager & Coach
 export interface Manager {
   name: string;
   image: string;
@@ -14,7 +14,7 @@ export interface Coach {
   image: string;
 }
 
-
+// General Info
 export interface GeneralInfo {
   full_name: string;
   job_position: string;
@@ -24,12 +24,13 @@ export interface GeneralInfo {
   tags: string[];
   company: string;
   department: string | { id: string; name: string };
-  manager: Manager;
-  coach: Coach;
+  manager?: Manager;
+  coach?: Coach;
   image: string;
   status: "online" | "offline";
 }
 
+// Experience & Education
 export interface Experience {
   date_from: string;
   date_to: string;
@@ -48,18 +49,17 @@ export interface Resume {
   education: Education[];
 }
 
+// Skills
 export interface SkillLevel {
   level: string;
   percentage: number;
 }
 
 export interface Language {
-  level: ReactNode;
-  percentage(percentage: any): unknown;
   language_name: string;
-  skill_level: SkillLevel;
+  level: string; // replaced ReactNode with string for consistency
+  percentage: number;
 }
-
 
 export interface ProgrammingLanguage {
   name: string;
@@ -68,146 +68,125 @@ export interface ProgrammingLanguage {
 }
 
 export interface Skills {
-  other_skills: any;
+  other_skills: Array<{ skill_name: string; level: string; percentage: number }>;
   language: Language[];
-  marketing: Marketing;
   programming_languages: ProgrammingLanguage[];
 }
 
+// General Resume
 export interface GeneralResume {
   resume: Resume;
   skills: Skills;
 }
 
-export interface MarketingSkill {
-  level: string;
-  percentage: number;
-}
-
-export interface Marketing {
-  communication: MarketingSkill;
-  public_speaking: MarketingSkill;
-}
-export interface Approvers {
-  time_off: string;
-  timesheet: string;
-}
-
-export interface Schedule {
-  working_hours: string;
-  timezone: string;
-}
-
-export interface Planning {
-  roles: string[];
-  default_roles: string[];
-}
-
+// Work Info
 export interface WorkInfo {
   work_address: string;
   work_location: string;
   working_hours: string;
   timezone: string;
-  approver_timeoff_id: string;
-  approver_timesheet_id: string;
+  approver_timeoff_id?: string;
+  approver_timesheet_id?: string;
   employee_id: string;
 }
 
+// Private Info
 export interface PrivateAddress {
-  street: string;
-  street2: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
+  street?: string;
+  street2?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  country?: string;
 }
 
 export interface PrivateContact {
-  zip: string;
-  country: string;
-  city: string;
-  state: string;
-  street: string;
-  private_address: PrivateAddress;
-  private_email: string;
-  private_phone: string;
-  home_work_distance: string;
-  private_car_plate: string;
+  zip?: string;
+  country?: string;
+  city?: string;
+  state?: string;
+  street?: string;
+  private_address?: PrivateAddress;
+  private_email?: string;
+  private_phone?: string;
+  home_work_distance?: string;
+  private_car_plate?: string;
 }
 
 export interface Emergency {
-  contact_name: string;
-  contact_phone: string;
+  contact_name?: string;
+  contact_phone?: string;
 }
 
 export interface FamilyStatus {
-  spouse_name: string;
-  dependent_children: string;
-  marital_status: string;
-  spouse_complete_name: string;
-  spouse_birthday: string;
-  number_of_dependent_children: number;
+  spouse_name?: string;
+  dependent_children?: string;
+  marital_status?: string;
+  spouse_complete_name?: string;
+  spouse_birthday?: string;
+  number_of_dependent_children?: number;
 }
 
 export interface EducationInfo {
-  certificate_level: string;
-  field_of_study: string;
-  school: string;
+  certificate_level?: string;
+  field_of_study?: string;
+  school?: string;
 }
 
 export interface WorkPermit {
-  permit_expiration: any;
-  visa_expiration: any;
-  visa_no: string;
-  work_permit: string;
-  visa_expiration_no: string;
-  work_permit_expiration_date: string;
+  permit_expiration?: string;
+  visa_expiration?: string;
+  visa_no?: string;
+  work_permit?: string;
+  visa_expiration_no?: string;
+  work_permit_expiration_date?: string;
 }
 
 export interface PrivateInfo {
-  private_contact: PrivateContact;
-  emergency: Emergency;
-  family_status: FamilyStatus;
-  education: EducationInfo;
-  work_permit: WorkPermit;
+  private_contact?: PrivateContact;
+  emergency?: Emergency;
+  family_status?: FamilyStatus;
+  education?: EducationInfo;
+  work_permit?: WorkPermit;
 }
 
+// Settings
 export interface Status {
-  employee_type: string;
-  related_user: string;
+  employee_type?: string;
+  related_user?: string;
 }
 
 export interface ApplicationSettings {
-  hourly_cost: number;
+  hourly_cost?: number;
 }
 
 export interface AttendancePointOfSale {
-  pin_code: string;
-  badge_id: string;
+  pin_code?: string;
+  badge_id?: string;
 }
 
 export interface Settings {
-  status: Status;
-  application_settings: ApplicationSettings;
-  attendance_point_of_sale: AttendancePointOfSale;
+  status?: Status;
+  application_settings?: ApplicationSettings;
+  attendance_point_of_sale?: AttendancePointOfSale;
 }
 
+// User & Employee
 export interface User {
-  general_info: GeneralInfo;
-  general_resume: GeneralResume;
-  work_info: WorkInfo;
-  private_info: PrivateInfo;
-  settings: Settings;
+  general_info?: GeneralInfo;
+  general_resume?: GeneralResume;
+  work_info?: WorkInfo;
+  private_info?: PrivateInfo;
+  settings?: Settings;
 }
-
 
 export interface Employee {
   id: number | string;
-    _id?: string; 
+  _id?: string;
   user: User;
 }
 
-// Utility types for functions
+// Utility types
 export interface PaginationResult {
   employees: Employee[];
   totalPages: number;

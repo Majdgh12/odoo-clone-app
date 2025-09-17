@@ -8,6 +8,9 @@ import EmployeeCard from "@/components/EmployeeCard";
 import EmployeeListView from "@/components/EmployeeListView";
 import { initializeEmployees } from "@/lib/getEmployees";
 import router from "next/router";
+import { useSession } from "next-auth/react";
+
+
 
 export default function Home() {
   const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
@@ -23,30 +26,38 @@ export default function Home() {
   const [windowWidth, setWindowWidth] = useState<number>(0);
   const itemsPerPage = 9;
   const [role, setRole] = useState<string>("");
-
+   
+  const { data: session, status } = useSession();
 
 
 
   // Fetch employees on mount
-  useEffect(() => {
-    const storedRole = localStorage.getItem("userRole");
-  if (storedRole) setRole(storedRole);
+   useEffect(() => {
+    if (status === "loading") return; // wait until session is fetched
 
-  const token = localStorage.getItem("authToken");
-  if (!token) router.push("/login"); // optional protection
-    const fetchEmployees = async () => {
-      try {
-        const employees = await initializeEmployees();
-        setAllEmployees(employees);
-        setAllFilteredEmployees(employees);
-        setFilteredEmployees(employees);
-        setCurrentPage(1);
-      } catch (err) {
-        console.error("Failed to fetch employees:", err);
+    if (!session) {
+      router.push("/");
+    } else {
+      // ✅ set role directly from session
+      if (session.user?.role) {
+        setRole(session.user.role);
       }
-    };
-    fetchEmployees();
-  }, []);
+
+      // Fetch employees
+      const fetchEmployees = async () => {
+        try {
+          const employees = await initializeEmployees();
+          setAllEmployees(employees);
+          setAllFilteredEmployees(employees);
+          setFilteredEmployees(employees);
+          setCurrentPage(1);
+        } catch (err) {
+          console.error("Failed to fetch employees:", err);
+        }
+      };
+      fetchEmployees();
+    }
+  }, [session, status]);
 
   // Detect client mount and window size
   useEffect(() => {
