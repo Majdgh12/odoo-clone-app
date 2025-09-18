@@ -1,55 +1,75 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import AddEmployee from "../../../components/dashboard_components/AddEmployee";
+import Departments from "../../../components/dashboard_components/Departements";
+import AssignManager from "../../../components/dashboard_components/AssignManager";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode"; // <-- correct named import
 
-interface JwtPayload {
-  role: string;
-  userId: string;
-  departmentId?: string;
-}
-
-export default function AdminDashboard() {
+export default function Page() {
+  const { data: session, status } = useSession();
   const router = useRouter();
+
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedMenu, setSelectedMenu] = useState<"employees" | "departments" | "assign-manager">("employees");
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
 
+  // Check session & role
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    if (status === "loading") return; // wait for session
 
-    if (!token) {
-      setError("No token found. Please login.");
-      setLoading(false);
+    if (!session) {
+      alert("You must be logged in to access the admin page."); // show alert
+      router.push("/"); // redirect if not logged in
       return;
     }
 
-    try {
-      // Decode token
-      const decoded = jwtDecode<JwtPayload>(token);
-
-      // Check role
-      if (decoded.role !== "admin") {
-        setError("You are not authorized to access this page.");
-        setLoading(false);
-        return;
-      }
-
-      // Admin → allow access
-      setLoading(false);
-    } catch (err) {
-      setError("Invalid token. Please login again.");
-      setLoading(false);
+    if (session.user?.role !== "admin") {
+      alert("You are not authorized to access the admin page."); // show alert
+      router.push("/home"); // redirect to home page
+      return;
     }
-  }, []);
+
+    setLoading(false); // session valid & admin
+  }, [session, status, router]);
+
+  // Fetch employees & departments
+  useEffect(() => {
+    if (!loading) {
+      fetch("/api/departments").then(res => res.json()).then(setDepartments);
+      fetch("/api/employees").then(res => res.json()).then(setEmployees);
+    }
+  }, [loading]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-      <p>Welcome, Admin! You have access to this page.</p>
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-md p-4 space-y-6">
+        <h2 className="font-bold text-lg">Admin Dashboard</h2>
+        <nav className="space-y-3">
+          <Button variant="outline" className="w-full justify-start" onClick={() => setSelectedMenu("employees")}>
+            Add Employee
+          </Button>
+          <Button variant="outline" className="w-full justify-start" onClick={() => setSelectedMenu("departments")}>
+            Departments
+          </Button>
+          <Button variant="outline" className="w-full justify-start" onClick={() => setSelectedMenu("assign-manager")}>
+            Assign Manager
+          </Button>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-6 overflow-y-auto space-y-6">
+        {selectedMenu === "employees" && <AddEmployee employees={employees} departments={departments} />}
+        {selectedMenu === "departments" && <Departments  departments={departments} setDepartments={setDepartments} />}
+        {selectedMenu === "assign-manager" && <AssignManager employees={employees} departments={departments} />}
+      </main>
     </div>
   );
 }

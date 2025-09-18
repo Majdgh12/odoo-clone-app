@@ -9,6 +9,9 @@ import EmployeeListView from "@/components/EmployeeListView";
 import { initializeEmployees } from "@/lib/getEmployees";
 import router from "next/router";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+
 
 
 
@@ -28,7 +31,7 @@ export default function Home() {
   const [role, setRole] = useState<string>("");
    
   const { data: session, status } = useSession();
-
+  const router = useRouter();
 
 
   // Fetch employees on mount
