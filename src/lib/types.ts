@@ -178,6 +178,19 @@ export interface User {
   work_info?: WorkInfo;
   private_info?: PrivateInfo;
   settings?: Settings;
+  role?: string;
+  token?: string;
+  employeeId?: string;  
+}
+interface Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string;
+    employeeId?: string; // 👈 add here
+  };
+  accessToken?: string;
 }
 
 export interface Employee {

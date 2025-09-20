@@ -46,6 +46,7 @@ const handler = NextAuth({
               email: data.user.email,
               role: data.user.role,
               token: data.token,
+              employeeId: data.user.employee?._id || null,
             };
           }
           return null;
@@ -61,6 +62,7 @@ const handler = NextAuth({
       if (user) {
         token.role = user.role;
         token.accessToken = user.token;
+        token.employeeId = user.employeeId; // 👈 save to token
       }
       return token;
     },
@@ -69,6 +71,7 @@ const handler = NextAuth({
         if (session.user) {
           session.user.role =
             typeof token.role === "string" ? token.role : undefined;
+          session.user.employeeId = token.employeeId as string | undefined; // 👈 attach to session.user
         }
         session.accessToken =
           typeof token.accessToken === "string" ? token.accessToken : undefined;

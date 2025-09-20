@@ -63,7 +63,7 @@ const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
-              onClick={() => router.push(`/employees/${session.user.id}`)} // Redirect to Profile page
+              onClick={() => router.push(`/employees/${session.user.employeeId}`)} // Redirect to Profile page
             >
               Profile
             </button>
@@ -93,8 +93,8 @@ const Navbar: React.FC<NavbarProps> = ({
       <button
         className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
         onClick={() => {
-          if (session?.user?.id) {
-            router.push(`/employees/${session.user.id}`);
+          if (session?.user?.employeeId) {
+            router.push(`/employees/${session.user.employeeId}`);
           }
         }}
       >
@@ -126,8 +126,8 @@ const Navbar: React.FC<NavbarProps> = ({
       <button
         className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
         onClick={() => {
-          if (session?.user?.id) {
-            router.push(`/employees/${session.user.id}`);
+          if (session?.user?.employeeId) {
+            router.push(`/employees/${session.user.employeeId}`);
           }
         }}
       >
@@ -153,8 +153,8 @@ const Navbar: React.FC<NavbarProps> = ({
       <button
         className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
         onClick={() => {
-          if (session?.user?.id) {
-            router.push(`/employees/${session.user.id}`);
+          if (session?.user?.employeeId) {
+            router.push(`/employees/${session.user.employeeId}`);
           }
         }}
       >
