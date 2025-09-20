@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"; // <-- correct named import
 
 interface JwtPayload {
@@ -11,7 +10,6 @@ interface JwtPayload {
 }
 
 export default function AdminDashboard() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
