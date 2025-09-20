@@ -200,7 +200,7 @@ export default function Home() {
         </header>
 
         <section className="flex-1 bg-gray-50 overflow-y-auto overflow-x-hidden pt-16 lg:pt-12">
-          <p className="text-gray-700 text-lg ml-4">I am the {role}</p>
+        
 
           {mounted && displayMode === "grid" && (
             <div className="p-4 mt-2">

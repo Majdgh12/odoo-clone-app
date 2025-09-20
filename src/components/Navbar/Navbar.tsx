@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import {
   SearchBar,
   ViewTypeSelector,
-  Pagination,
-  ActionButtons
+  Pagination
 } from './index';
 
 interface NavbarProps {
-  title?: string;
   totalEmployees: number;
   currentPage: number;
   totalPages: number;
@@ -20,13 +19,10 @@ interface NavbarProps {
   onGroupByChange: (groupBy: string) => void;
   onViewTypeChange: (viewType: 'grid' | 'list' | 'kanban') => void;
   onPageChange: (page: number) => void;
-  onNewEmployee: () => void;
   onExport: () => void;
-  onSettings: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  title = "Employees",
   totalEmployees,
   currentPage,
   totalPages,
@@ -36,39 +32,155 @@ const Navbar: React.FC<NavbarProps> = ({
   onGroupByChange,
   onViewTypeChange,
   onPageChange,
-  onNewEmployee,
-  onExport,
-  onSettings
+  onExport
 }) => {
-  const [showNewBadge] = useState(true);
+  const { data: session } = useSession();
+  const [role, setRole] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleFavoriteToggle = () => {
-    console.log('Favorite toggled');
+  useEffect(() => {
+    if (session && session.user) {
+      setRole(session.user.role as string); // Assuming session.user.role exists
+    }
+  }, [session]);
+
+  const renderRoleButtons = () => {
+    switch (role) {
+      case 'admin':
+        return (
+          <div className="flex items-center gap-2">
+            <button
+              className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+              onClick={() => router.push('/home')} // Redirect to Home page
+            >
+              Home
+            </button>
+            <button
+              className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+              onClick={() => router.push('/admin/dashboard')} // Redirect to Dashboard page
+            >
+              Dashboard
+            </button>
+            <button
+              className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+              onClick={() => router.push(`/employees/${session.user.id}`)} // Redirect to Profile page
+            >
+              Profile
+            </button>
+            <button
+              onClick={() => signOut()}
+              className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+            >
+              Logout
+            </button>
+          </div>
+        );
+      case 'manager':
+        return (
+           <div className="flex items-center gap-2">
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => router.push('/home')}
+      >
+        Home
+      </button>
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => router.push('/dashboard_manager')}
+      >
+        Dashboard
+      </button>
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => {
+          if (session?.user?.id) {
+            router.push(`/employees/${session.user.id}`);
+          }
+        }}
+      >
+        Profile
+      </button>
+      <button
+        onClick={() => signOut()}
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+      >
+        Logout
+      </button>
+    </div>
+        );
+      case 'team_lead':
+        return (
+          <div className="flex items-center gap-2">
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => router.push('/home')}
+      >
+        Home
+      </button>
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => router.push('/dashboard_team_lead')}
+      >
+        My team
+      </button>
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => {
+          if (session?.user?.id) {
+            router.push(`/employees/${session.user.id}`);
+          }
+        }}
+      >
+        Profile
+      </button>
+      <button
+        onClick={() => signOut()}
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+      >
+        Logout
+      </button>
+    </div>
+        );
+      case 'employee':
+        return (
+           <div className="flex items-center gap-2">
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => router.push('/home')}
+      >
+        Home
+      </button>
+      <button
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+        onClick={() => {
+          if (session?.user?.id) {
+            router.push(`/employees/${session.user.id}`);
+          }
+        }}
+      >
+        Profile
+      </button>
+      <button
+        onClick={() => signOut()}
+        className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+      >
+        Logout
+      </button>
+    </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 px-4 py-4 z-10">
-      {/* Large Screen Layout (lg and above) */}
+      {/* Large Screen Layout */}
       <div className="hidden lg:flex items-center gap-2 justify-between w-full">
-        {/* Left - New Employee Button */}
-        <div className="flex justify-start">
-          <button
-            onClick={onNewEmployee}
-            className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
-          >
-            New
-          </button>
-          
-          <span className="flex pl-1 mt-1.5 text-xl font-medium text-black select-none">{title}</span>
-          <Settings className="mt-3 pl-0.5 w-4 h-4 text-black" />
-        </div>
-
-        {/* Center - Search Bar */}
+        <div className="flex items-center gap-2">{renderRoleButtons()}</div>
         <div className="flex-1 flex w-[300px] max-w-md justify-center select-none">
           <SearchBar onSearch={onSearch} placeholder="Search..." />
         </div>
-
-        {/* Right - Pagination + ViewType + Settings */}
         <div className="flex justify-end items-center gap-3">
           <Pagination
             currentPage={currentPage}
@@ -81,23 +193,10 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Medium Screen Layout (md to lg) */}
+      {/* Medium Screen Layout */}
       <div className="hidden md:flex lg:hidden flex-col gap-3">
-        {/* First Row - Title and Controls */}
         <div className="flex items-center justify-between w-full">
-          {/* Left - New Employee Button and Title */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onNewEmployee}
-              className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
-            >
-              New
-            </button>
-            <span className="text-xl font-medium text-black select-none">{title}</span>
-            <Settings className="w-4 h-4 text-black" />
-          </div>
-
-          {/* Right - Pagination + ViewType */}
+          <div className="flex items-center gap-2">{renderRoleButtons()}</div>
           <div className="flex items-center gap-3">
             <Pagination
               currentPage={currentPage}
@@ -109,29 +208,15 @@ const Navbar: React.FC<NavbarProps> = ({
             <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
           </div>
         </div>
-
-        {/* Second Row - Full Width Search Bar */}
         <div className="w-full">
           <SearchBar onSearch={onSearch} placeholder="Search..." />
         </div>
       </div>
 
-      {/* Small Screen Layout (below md) */}
+      {/* Small Screen Layout */}
       <div className="flex md:hidden flex-col gap-3">
-        {/* First Row - New Button, Settings, Pagination, ViewType */}
         <div className="flex items-center justify-between w-full">
-          {/* Left - New Button and Settings */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onNewEmployee}
-              className="bg-[#65435c] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#55394e] select-none"
-            >
-              New
-            </button>
-            <Settings className="w-4 h-4 text-black" />
-          </div>
-
-          {/* Right - Pagination + ViewType */}
+          <div className="flex items-center gap-2">{renderRoleButtons()}</div>
           <div className="flex items-center gap-2">
             <Pagination
               currentPage={currentPage}
@@ -143,8 +228,6 @@ const Navbar: React.FC<NavbarProps> = ({
             <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
           </div>
         </div>
-
-        {/* Second Row - Full Width Search Bar */}
         <div className="w-full">
           <SearchBar onSearch={onSearch} placeholder="Search..." />
         </div>
