@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,24 @@ export default function Departments({
   const [newDepartmentCompany, setNewDepartmentCompany] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Add Department (calls backend API)
+  // ✅ Fetch all departments on load
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/departments");
+        if (!res.ok) throw new Error("Failed to fetch departments");
+
+        const data = await res.json();
+        setDepartments(data);
+      } catch (err: any) {
+        alert(`❌ Error: ${err.message}`);
+      }
+    };
+
+    fetchDepartments();
+  }, [setDepartments]);
+
+  // ✅ Add Department
   const handleAddDepartment = async () => {
     if (!newDepartmentName || !newDepartmentCompany) {
       alert("⚠️ Please enter department name and company");
@@ -53,26 +70,6 @@ export default function Departments({
     }
   };
 
-  // ✅ Delete Department (calls backend API)
-  const handleDeleteDepartment = async (id: string) => {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/departments/${id}`,
-        { method: "DELETE" }
-      );
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to delete department");
-      }
-
-      setDepartments(departments.filter((d) => d._id !== id));
-      alert("🗑️ Department deleted");
-    } catch (err: any) {
-      alert(`❌ Error: ${err.message}`);
-    }
-  };
-
   return (
     <Card className="p-6 shadow-md">
       <h3 className="text-xl font-semibold mb-4">🏢 Departments</h3>
@@ -98,6 +95,7 @@ export default function Departments({
           {loading ? "Adding..." : "Add Department"}
         </Button>
 
+        {/* ✅ Show all departments */}
         <ul className="space-y-2 mt-4">
           {departments.map((d) => (
             <li
@@ -107,14 +105,6 @@ export default function Departments({
               <span>
                 {d.name} ({d.company})
               </span>
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-red-600 hover:text-red-800"
-                onClick={() => handleDeleteDepartment(d._id)}
-              >
-                Delete
-              </Button>
             </li>
           ))}
         </ul>

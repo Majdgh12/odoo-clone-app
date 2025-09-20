@@ -4,6 +4,11 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, Users2, ChevronRight } from "lucide-react";
 import type { Employee } from "@/lib/types";
 
+interface Department {
+  _id: string;
+  name: string;
+}
+
 interface SidebarProps {
   allEmployees: Employee[];
   onFilterChange: (filteredEmployees: Employee[]) => void;
@@ -23,37 +28,47 @@ const Sidebar: React.FC<SidebarProps> = ({
   children,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [departments, setDepartments] = useState<string[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [counts, setCounts] = useState({
     total: 0,
     byDepartment: {} as Record<string, number>,
   });
 
-  // Compute departments and counts from allEmployees
- useEffect(() => {
-  if (!allEmployees || allEmployees.length === 0) return;
-
-  const deptCounts: Record<string, number> = {};
-  allEmployees.forEach((emp) => {
-    const deptName = typeof emp.user.general_info.department === "string"
-      ? emp.user.general_info.department
-      : emp.user.general_info.department?.name ?? "Unknown";
-
-    if (deptName) deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
-  });
-
-  setCounts({
-    total: allEmployees.length,
-    byDepartment: deptCounts,
-  });
-
-  setDepartments(Object.keys(deptCounts).sort());
-}, [allEmployees]); // <- only triggers when the real source changes// <- only compute counts, DO NOT call onFilterChange here
-
-  // Apply filtering whenever selectedFilters change
+  // ✅ Fetch all departments from backend
   useEffect(() => {
-    if (!allEmployees) return;
+    const fetchDepartments = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/departments");
+        if (!res.ok) throw new Error("Failed to fetch departments");
+        const data = await res.json();
+        setDepartments(data); // expects array of { _id, name }
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    };
+    fetchDepartments();
+  }, []);
 
+  // ✅ Compute employee counts
+  useEffect(() => {
+    const deptCounts: Record<string, number> = {};
+    allEmployees.forEach((emp) => {
+      const deptName =
+        typeof emp.user.general_info.department === "string"
+          ? emp.user.general_info.department
+          : emp.user.general_info.department?.name ?? "Unknown";
+
+      if (deptName) deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+    });
+
+    setCounts({
+      total: allEmployees.length,
+      byDepartment: deptCounts,
+    });
+  }, [allEmployees]);
+
+  // ✅ Apply filtering
+  useEffect(() => {
     let filtered = [...allEmployees];
 
     if (selectedFilters.department && selectedFilters.department !== "all") {
@@ -66,12 +81,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     if (selectedFilters.company && selectedFilters.company !== "all") {
       filtered = filtered.filter(
-        (emp) => emp.user.general_info.company.toLowerCase() === selectedFilters.company.toLowerCase()
+        (emp) =>
+          emp.user.general_info.company.toLowerCase() ===
+          selectedFilters.company.toLowerCase()
       );
     }
 
-    onFilterChange(filtered); // <- only here
-  }, [selectedFilters, allEmployees, onFilterChange]); // <- safe
+    onFilterChange(filtered);
+  }, [selectedFilters, allEmployees, onFilterChange]);
 
   const handleDepartmentFilter = (department: string) => {
     onFilterUpdate("department", department);
@@ -129,12 +146,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </button>
 
+              {/* ✅ Show departments from backend */}
               {departments.map((dept) => (
                 <button
-                  key={dept}
-                  onClick={() => handleDepartmentFilter(dept)}
+                  key={dept._id}
+                  onClick={() => handleDepartmentFilter(dept.name)}
                   className={`w-full text-left mt-0.5 px-3 py-1.5 rounded-md text-sm transition-colors ${
-                    selectedFilters.department === dept
+                    selectedFilters.department === dept.name
                       ? "bg-teal-50 text-black border font-medium"
                       : "text-black hover:bg-gray-200"
                   }`}
@@ -142,10 +160,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <ChevronRight className="w-3 h-3 mr-1 text-black" />
-                      <span className="text-black">{dept}</span>
+                      <span className="text-black">{dept.name}</span>
                     </div>
                     <span className="bg-gray-200 text-black px-2 py-0.5 rounded-full text-xs font-medium">
-                      {getFilteredCount(dept)}
+                      {getFilteredCount(dept.name)}
                     </span>
                   </div>
                 </button>

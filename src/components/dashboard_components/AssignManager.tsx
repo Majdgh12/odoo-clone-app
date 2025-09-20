@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -12,16 +12,34 @@ import { Button } from "@/components/ui/button";
 
 interface AssignManagerProps {
   departments: any[];
-  employees: any[];
 }
 
-export default function AssignManager({
-  departments,
-  employees,
-}: AssignManagerProps) {
+export default function AssignManager({ departments }: AssignManagerProps) {
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [employees, setEmployees] = useState<any[]>([]);
   const [selectedManager, setSelectedManager] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // ✅ Fetch employees when department changes
+  useEffect(() => {
+    if (!selectedDepartment) return;
+
+    const fetchEmployees = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/departments/${selectedDepartment}/employees`
+        );
+        if (!res.ok) throw new Error("Failed to fetch employees");
+        const data = await res.json();
+        setEmployees(data);
+      } catch (err) {
+        console.error(err);
+        setEmployees([]);
+      }
+    };
+
+    fetchEmployees();
+  }, [selectedDepartment]);
 
   const handleAssign = async () => {
     if (!selectedDepartment || !selectedManager) {
@@ -47,11 +65,12 @@ export default function AssignManager({
       }
 
       const data = await res.json();
-      alert(`✅ Manager assigned successfully: ${data.message || "Done"}`);
+      alert(`✅ ${data.message || "Manager assigned successfully"}`);
 
-      // reset selection
+      // Reset
       setSelectedDepartment("");
       setSelectedManager("");
+      setEmployees([]);
     } catch (err: any) {
       alert(`❌ Error: ${err.message}`);
     } finally {
@@ -80,8 +99,12 @@ export default function AssignManager({
           </SelectContent>
         </Select>
 
-        {/* Employee Select */}
-        <Select value={selectedManager} onValueChange={setSelectedManager}>
+        {/* Employee Select (dynamic) */}
+        <Select
+          value={selectedManager}
+          onValueChange={setSelectedManager}
+          disabled={!employees.length}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Manager" />
           </SelectTrigger>

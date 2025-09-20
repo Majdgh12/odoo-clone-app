@@ -39,8 +39,8 @@ export default function Page() {
   // Fetch employees & departments
   useEffect(() => {
     if (!loading) {
-      fetch("/api/departments").then(res => res.json()).then(setDepartments);
-      fetch("/api/employees").then(res => res.json()).then(setEmployees);
+      fetch("http://localhost:5000/api/departments").then(res => res.json()).then(setDepartments);
+      fetch("http://localhost:5000/api/employees").then(res => res.json()).then(setEmployees);
     }
   }, [loading]);
 
