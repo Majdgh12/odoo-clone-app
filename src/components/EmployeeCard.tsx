@@ -41,10 +41,10 @@ export default function EmployeeCard({
   return (
     <Link href={`/employees/${id}`} className="block w-full h-full">
       <div className="relative w-full h-auto min-h-fit flex items-start gap-2 p-4 border rounded-lg shadow-sm bg-white cursor-pointer hover:shadow-md transition z-0">
-        
+
         {/* Profile Image */}
         <div className="relative w-20 h-20 flex-shrink-0 overflow-visible z-0">
-          <div 
+          <div
             className="relative w-full h-full rounded-lg "
             onMouseEnter={() => setIsImageHovered(true)}
             onMouseLeave={() => setIsImageHovered(false)}
@@ -67,7 +67,7 @@ export default function EmployeeCard({
 
           {/* Hover preview above the image - SQUARE */}
           <div
-           className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
+            className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
               w-32 h-32 rounded-lg border shadow-lg bg-white 
               transition-opacity duration-200 z-10 pointer-events-none 
               ${isImageHovered ? 'opacity-100' : 'opacity-0'}`}>
@@ -91,7 +91,7 @@ export default function EmployeeCard({
 
         {/* Content Section */}
         <div className="flex-1 min-w-0 flex flex-col gap-2">
-          
+
           {/* Name and Status */}
           <div>
             <h2 className="text-lg font-bold text-black flex items-center gap-2">
@@ -118,18 +118,21 @@ export default function EmployeeCard({
           </div>
 
           {/* Tags Section */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {tags.map((tag, index) => (
+          <div className="flex flex-wrap gap-1 min-h-[1.5rem]">
+            {tags.length > 0 ? (
+              tags.map((tag, index) => (
                 <span
                   key={index}
                   className="px-2 py-0.5 text-xs rounded-full border bg-gray-100 text-gray-700 whitespace-nowrap"
                 >
                   {tag}
                 </span>
-              ))}
-            </div>
-          )}
+              ))
+            ) : (
+              // Empty space placeholder
+              <div className="w-full h-0.5" />
+            )}
+          </div>
         </div>
       </div>
     </Link>

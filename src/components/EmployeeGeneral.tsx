@@ -100,7 +100,7 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/home")}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
