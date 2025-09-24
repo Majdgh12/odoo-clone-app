@@ -8,6 +8,7 @@ import EmployeeCard from "@/components/EmployeeCard";
 import EmployeeListView from "@/components/EmployeeListView";
 import { initializeEmployees } from "@/lib/getEmployees";
 import router from "next/router";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 
@@ -28,6 +29,7 @@ export default function Home() {
   const [role, setRole] = useState<string>("");
    
   const { data: session, status } = useSession();
+  const router = useRouter();
 
 
 

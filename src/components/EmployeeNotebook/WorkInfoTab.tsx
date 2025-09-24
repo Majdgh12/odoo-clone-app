@@ -60,18 +60,7 @@ const WorkInfoTab: React.FC<WorkInfoTabProps> = ({ employee }) => {
         </div>
       </div>
 
-      {/* Organizational Hierarchy */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Organizational Hierarchy</h3>
-        <div className="text-gray-900 font-medium">
-          {hierarchy.map((person, index) => (
-            <span key={index}>
-              {person.name} ({person.title})
-              {index < hierarchy.length - 1 && <span className="mx-2 text-gray-500">→</span>}
-            </span>
-          ))}
-        </div>
-      </div>
+    
     </div>
   );
 };
