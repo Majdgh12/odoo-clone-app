@@ -1,8 +1,10 @@
+// src/components/Sidebar/Sidebar.tsx (or wherever your Sidebar lives)
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ChevronLeft, Users2, ChevronRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ChevronLeft, Users2, ChevronRight, Plus } from "lucide-react";
 import type { Employee } from "@/lib/types";
+import Departments from "@/components/dashboard_components/Departments";
 
 interface Department {
   _id: string;
@@ -34,31 +36,40 @@ const Sidebar: React.FC<SidebarProps> = ({
     byDepartment: {} as Record<string, number>,
   });
 
-  // ✅ Fetch all departments from backend
+  // modal state for adding department
+  const [showAddDept, setShowAddDept] = useState(false);
+
+  // Function to fetch departments (used on mount and after closing modal)
+  const fetchDepartments = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/departments");
+      if (!res.ok) throw new Error("Failed to fetch departments");
+      const data = await res.json();
+      setDepartments(data || []);
+    } catch (err) {
+      console.error("Error fetching departments:", err);
+      setDepartments([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/departments");
-        if (!res.ok) throw new Error("Failed to fetch departments");
-        const data = await res.json();
-        setDepartments(data); // expects array of { _id, name }
-      } catch (err) {
-        console.error("Error fetching departments:", err);
-      }
-    };
     fetchDepartments();
   }, []);
 
-  // ✅ Compute employee counts
+  // Compute employee counts (employees without department counted only in total "All")
   useEffect(() => {
     const deptCounts: Record<string, number> = {};
-    allEmployees.forEach((emp) => {
-      const deptName =
-        typeof emp.user.general_info.department === "string"
-          ? emp.user.general_info.department
-          : emp.user.general_info.department?.name ?? "Unknown";
 
-      if (deptName) deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+    allEmployees.forEach((emp) => {
+      let deptName =
+        typeof emp.user?.general_info?.department === "string"
+          ? emp.user.general_info.department
+          : emp.user.general_info.department?.name ?? null;
+
+      if (deptName) {
+        deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+      }
+      // employees without department are counted in total only
     });
 
     setCounts({
@@ -67,22 +78,28 @@ const Sidebar: React.FC<SidebarProps> = ({
     });
   }, [allEmployees]);
 
-  // ✅ Apply filtering
+  // Apply filtering
   useEffect(() => {
     let filtered = [...allEmployees];
 
     if (selectedFilters.department && selectedFilters.department !== "all") {
       filtered = filtered.filter((emp) => {
-        let deptName = emp.user.general_info.department;
-        if (typeof deptName !== "string") deptName = deptName?.name ?? "Unknown";
-        return deptName.toLowerCase() === selectedFilters.department.toLowerCase();
+        let deptName =
+          typeof emp.user?.general_info?.department === "string"
+            ? emp.user.general_info.department
+            : emp.user.general_info.department?.name ?? null;
+
+        return (
+          deptName &&
+          deptName.toLowerCase() === selectedFilters.department.toLowerCase()
+        );
       });
     }
 
     if (selectedFilters.company && selectedFilters.company !== "all") {
       filtered = filtered.filter(
         (emp) =>
-          emp.user.general_info.company.toLowerCase() ===
+          emp.user?.general_info?.company?.toLowerCase() ===
           selectedFilters.company.toLowerCase()
       );
     }
@@ -99,34 +116,53 @@ const Sidebar: React.FC<SidebarProps> = ({
     return counts.byDepartment[department] || 0;
   };
 
-  return (
-    <div
-      className={`t-16 h-screen overflow-hidden bg-white shadow-lg transition-all duration-300 ${
-        isCollapsed ? "w-16" : "w-64"
-      } border-r border-gray-300 pt-16`}
-    >
-      {/* Collapse button */}
-      <div className="flex justify-end p-2 mb-0">
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 rounded-md hover:bg-gray-100 transition-colors"
-        >
-          <ChevronLeft
-            className={`w-5 h-5 text-black transition-transform ${
-              isCollapsed ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-      </div>
+  // called when modal closes to refresh department list in sidebar
+  const handleModalClose = () => {
+    setShowAddDept(false);
+    fetchDepartments(); // refresh departments after closing modal (new dept may exist)
+  };
 
-      {!isCollapsed && (
-        <div className="p-2 space-y-4">
-          <div>
-            <div className="flex items-center mb-3">
-              <Users2 className="w-5 h-5 text-[#65435c] mr-2" />
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-black">
-                DEPARTMENT
-              </h3>
+  return (
+    <>
+      <div
+        className={`t-16 h-screen overflow-hidden bg-white shadow-lg transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-64"
+        } border-r border-gray-300 pt-16`}
+      >
+        {/* Collapse button */}
+        <div className="flex justify-end p-2 mb-0">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+          >
+            <ChevronLeft
+              className={`w-5 h-5 text-black transition-transform ${
+                isCollapsed ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        </div>
+
+        {!isCollapsed && (
+          <div className="p-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center mb-3">
+                <Users2 className="w-5 h-5 text-[#65435c] mr-2" />
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-black">
+                  DEPARTMENT
+                </h3>
+              </div>
+
+              {/* Plus button: opens Add Department modal */}
+              <div className="mb-3">
+                <button
+                  onClick={() => setShowAddDept(true)}
+                  className="p-1 rounded-md hover:bg-gray-100 transition-colors text-gray-600"
+                  title="Create department"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="space-y-1">
@@ -146,7 +182,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </button>
 
-              {/* ✅ Show departments from backend */}
+              {/* Show only defined departments */}
               {departments.map((dept) => (
                 <button
                   key={dept._id}
@@ -170,19 +206,29 @@ const Sidebar: React.FC<SidebarProps> = ({
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {children && !isCollapsed && (
-        <div className="block lg:hidden flex-1 overflow-y-auto p-4">{children}</div>
-      )}
+        {children && !isCollapsed && (
+          <div className="block lg:hidden flex-1 overflow-y-auto p-4">{children}</div>
+        )}
 
-      {isCollapsed && (
-        <div className="p-2 space-y-4 mt-4 flex justify-center">
-          <Users2 className="w-6 h-6 text-[#65435c]" />
-        </div>
+        {isCollapsed && (
+          <div className="p-2 space-y-4 mt-4 flex justify-center">
+            <Users2 className="w-6 h-6 text-[#65435c]" />
+          </div>
+        )}
+      </div>
+
+      {/* Modal: Departments create form */}
+      {showAddDept && (
+        <Departments
+          isModal={true}
+          onClose={handleModalClose}
+          // Allow Departments to refresh the provided list in the component itself.
+          // We don't pass setDepartments here because the sidebar fetches its own list after close.
+        />
       )}
-    </div>
+    </>
   );
 };
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import AddEmployee from "../../../components/dashboard_components/AddEmployee";
-import Departments from "../../../components/dashboard_components/Departements";
+import Departments from "../../../components/dashboard_components/Departments";
 import AssignManager from "../../../components/dashboard_components/AssignManager";
 import UpdateEmployee from "../../../components/dashboard_components/UpdateEmployee";
 import { useSession } from "next-auth/react";

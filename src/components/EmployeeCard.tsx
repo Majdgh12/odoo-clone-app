@@ -38,66 +38,71 @@ export default function EmployeeCard({
   const useFallback = isRemoteUrl(image);
   const [isImageHovered, setIsImageHovered] = useState(false);
 
+  const hasImage = image && image.trim() !== "";
+
   return (
     <Link href={`/employees/${id}`} className="block w-full h-full">
       <div className="relative w-full h-auto min-h-fit flex items-start gap-2 p-4 border rounded-lg shadow-sm bg-white cursor-pointer hover:shadow-md transition z-0">
 
         {/* Profile Image */}
-        <div className="relative w-20 h-20 flex-shrink-0 overflow-visible z-0">
-          <div
-            className="relative w-full h-full rounded-lg "
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
-          >
-            {useFallback ? (
-              <img
-                src={image}
-                alt={full_name}
-                className="w-full h-full object-cover rounded-lg cursor-pointer"
-              />
-            ) : (
-              <Image
-                src={image}
-                alt={full_name}
-                fill
-                className="object-cover rounded-lg cursor-pointer"
-              />
-            )}
-          </div>
+        {hasImage && (
+          <div className="relative w-20 h-20 flex-shrink-0 overflow-visible z-0">
+            <div
+              className="relative w-full h-full rounded-lg "
+              onMouseEnter={() => setIsImageHovered(true)}
+              onMouseLeave={() => setIsImageHovered(false)}
+            >
+              {useFallback ? (
+                <img
+                  src={image}
+                  alt={full_name}
+                  className="w-full h-full object-cover rounded-lg cursor-pointer"
+                />
+              ) : (
+                <Image
+                  src={image}
+                  alt={full_name}
+                  fill
+                  className="object-cover rounded-lg cursor-pointer"
+                />
+              )}
+            </div>
 
-          {/* Hover preview above the image - SQUARE */}
-          <div
-            className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
-              w-32 h-32 rounded-lg border shadow-lg bg-white 
-              transition-opacity duration-200 z-10 pointer-events-none 
-              ${isImageHovered ? 'opacity-100' : 'opacity-0'}`}>
-
-            {useFallback ? (
-              <img
-                src={image}
-                alt={full_name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <Image
-                src={image}
-                alt={full_name}
-                fill
-                className="object-cover"
-              />
-            )}
+            {/* Hover preview above the image - SQUARE */}
+            <div
+              className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
+                w-32 h-32 rounded-lg border shadow-lg bg-white 
+                transition-opacity duration-200 z-10 pointer-events-none 
+                ${isImageHovered ? "opacity-100" : "opacity-0"}`}
+            >
+              {useFallback ? (
+                <img
+                  src={image}
+                  alt={full_name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={image}
+                  alt={full_name}
+                  fill
+                  className="object-cover"
+                />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Content Section */}
         <div className="flex-1 min-w-0 flex flex-col gap-2">
-
           {/* Name and Status */}
           <div>
             <h2 className="text-lg font-bold text-black flex items-center gap-2">
               {full_name}
               <span
-                className={`w-2.5 h-2.5 rounded-full ${status === "online" ? "bg-green-400" : "bg-yellow-400"}`}
+                className={`w-2.5 h-2.5 rounded-full ${
+                  status === "online" ? "bg-green-400" : "bg-yellow-400"
+                }`}
                 title={status}
               />
             </h2>
