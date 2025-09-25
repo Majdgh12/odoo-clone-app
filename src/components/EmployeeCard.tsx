@@ -118,7 +118,7 @@ export default function EmployeeCard({
           </div>
 
           {/* Tags Section */}
-          <div className="flex flex-wrap gap-1 min-h-[1.5rem]">
+          <div className="flex flex-wrap gap-1 min-h-[1.5rem] ">
             {tags.length > 0 ? (
               tags.map((tag, index) => (
                 <span

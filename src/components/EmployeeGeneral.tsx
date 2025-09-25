@@ -4,21 +4,21 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react"; // session hook
 import type { Employee } from "../lib/types";
 import ResumeTab from "./EmployeeNotebook/ResumeTab";
 import WorkInfoTab from "./EmployeeNotebook/WorkInfoTab";
 import PrivateInfoTab from "./EmployeeNotebook/PrivateInfoTab";
 import SettingsTab from "./EmployeeNotebook/SettingsTab";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Home as HomeIcon, ChevronLeft, ChevronRight, Edit2, Save, X } from "lucide-react";
 
 interface EmployeeGeneralProps {
   employee: Employee | null;
   employees: Employee[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Helper to convert field to string
 const toStringField = (val: any): string => {
-// sourcery skip: use-braces
   if (typeof val === "string") return val;
   if (val && typeof val === "object") {
     if (typeof val.name === "string") return val.name;
@@ -33,9 +33,8 @@ const toStringField = (val: any): string => {
   return "";
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Helper to normalize tags
 const normalizeTags = (tags: any): string[] => {
-// sourcery skip: use-braces
   if (!tags) return [];
   if (Array.isArray(tags)) {
     return tags.map((t) => (typeof t === "string" ? t : t?.name ?? String(t)));
@@ -43,8 +42,7 @@ const normalizeTags = (tags: any): string[] => {
   return [typeof tags === "string" ? tags : tags?.name ?? String(tags)];
 };
 
-// sourcery skip: use-braces
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Get ID of object
 const idOf = (obj: any): string | undefined => {
   if (!obj) return undefined;
   return obj.id ?? obj._id ?? obj.toString?.();
@@ -52,9 +50,8 @@ const idOf = (obj: any): string | undefined => {
 
 const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }) => {
   const router = useRouter();
+  const { data: session } = useSession(); // session data
   const [activeTab, setActiveTab] = useState("resume");
-  console.log("EmployeeGeneral render", { employee, employees });
-  
 
   if (!employee) {
     return (
@@ -67,12 +64,12 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
     );
   }
 
+  const isAdmin = session?.user?.role === "admin"; // admin check
   const currentIndex = employees.findIndex(
     (e) => String(idOf(e)) === String(idOf(employee))
   );
 
   const navigateToEmployee = (direction: "prev" | "next") => {
-// sourcery skip: use-braces
     if (!employees.length) return;
     const lastIndex = employees.length - 1;
     const newIndex =
@@ -81,8 +78,8 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
           ? currentIndex + 1
           : 0
         : currentIndex > 0
-        ? currentIndex - 1
-        : lastIndex;
+          ? currentIndex - 1
+          : lastIndex;
 
     const newEmployee = employees[newIndex];
     const newId = idOf(newEmployee);
@@ -94,24 +91,62 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
   const companyText = toStringField(info.company);
   const tags = normalizeTags(info.tags);
 
+  // Editable mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: info.full_name ?? "",
+    job_position: info.job_position ?? "",
+    work_email: info.work_email ?? "",
+    work_phone: info.work_phone ?? "",
+    work_mobile: info.work_mobile ?? "",
+    tags: tags.join(", "),
+    company: companyText ?? "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    try {
+      const employeeId = idOf(employee);
+      const res = await fetch(`http://localhost:5000/api/employees/${employeeId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error("Failed to update employee");
+      setIsEditing(false);
+      router.refresh();
+    } catch (err) {
+      console.error("❌ Error updating employee:", err);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setFormData({
+      full_name: info.full_name ?? "",
+      job_position: info.job_position ?? "",
+      work_email: info.work_email ?? "",
+      work_phone: info.work_phone ?? "",
+      work_mobile: info.work_mobile ?? "",
+      tags: tags.join(", "),
+      company: companyText ?? "",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
+      {/* Navigation */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push("/home")}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+            title="Home"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            <span className="font-medium">Home</span>
+            <HomeIcon className="w-5 h-5" />
           </button>
 
           <div className="flex items-center space-x-4 bg-gray-50 rounded-lg px-4 py-2">
@@ -122,11 +157,9 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-
             <span className="text-sm text-gray-700 font-medium">
               {currentIndex + 1} / {employees.length}
             </span>
-
             <button
               onClick={() => navigateToEmployee("next")}
               className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -135,169 +168,137 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-
           <div className="w-20" />
         </div>
       </div>
 
       <div className="p-6 max-w-7xl mx-auto">
-        {/* Header Section */}
+        {/* Header */}
         <div className="p-8 border-b border-gray-200">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 mr-3">
-                  {info.full_name ?? "—"}
-                </h1>
-                <span className="text-blue-500 text-xl">🔗</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="full_name"
+                    value={formData.full_name}
+                    onChange={handleChange}
+                    className="text-3xl font-bold text-gray-900 border p-1 rounded w-1/2"
+                  />
+                ) : (
+                  <h1 className="text-3xl font-bold text-gray-900 mr-3">
+                    {info.full_name ?? "—"}
+                  </h1>
+                )}
+                {isAdmin && !isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="ml-4 p-2 rounded transition flex items-center justify-center"
+                    style={{ backgroundColor: "#65435C" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#54344c")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#65435C")
+                    }
+                    title="Edit Employee"
+                  >
+                    <Edit2 className="w-5 h-5 text-white" />
+                  </button>
+                )}
               </div>
 
               <p className="text-lg text-gray-600 mb-8">
-                {info.job_position ?? "—"}
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="job_position"
+                    value={formData.job_position}
+                    onChange={handleChange}
+                    className="border p-1 rounded w-1/2"
+                  />
+                ) : (
+                  info.job_position ?? "—"
+                )}
               </p>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-6">
+                {/* Editable left */}
                 <div className="space-y-6">
-                  {/* Work Email */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Work Email <span className="text-blue-500">?</span>
-                    </span>
-                    <span className="text-sm text-gray-900 ml-4">
-                      {info.work_email ?? "—"}
-                    </span>
-                  </div>
-
-                  {/* Work Phone */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Work Phone <span className="text-blue-500">?</span>
-                    </span>
-                    <span className="text-sm text-gray-900 ml-4">
-                      {info.work_phone ?? "—"}
-                    </span>
-                  </div>
-
-                  {/* Work Mobile */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Work Mobile <span className="text-blue-500">?</span>
-                    </span>
-                    <span className="text-sm text-gray-900 ml-4">
-                      {info.work_mobile ?? "—"}
-                    </span>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Tags <span className="text-blue-500">?</span>
-                    </span>
-                    <div className="ml-4 flex flex-wrap gap-1">
-                      {tags.length > 0 ? (
-                        tags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
-                          >
-                            {tag}
-                          </span>
-                        ))
+                  {[
+                    { label: "Work Email", name: "work_email" },
+                    { label: "Work Phone", name: "work_phone" },
+                    { label: "Work Mobile", name: "work_mobile" },
+                    { label: "Tags", name: "tags" },
+                    { label: "Company", name: "company" },
+                  ].map((field) => (
+                    <div key={field.name} className="flex items-start">
+                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
+                        {field.label}
+                      </span>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          name={field.name}
+                          value={(formData as any)[field.name]}
+                          onChange={handleChange}
+                          className="border p-1 rounded w-1/2 ml-4"
+                        />
                       ) : (
-                        <span className="text-sm text-gray-400">Tags</span>
+                        <span className="text-sm text-gray-900 ml-4">
+                          {(info as any)[field.name] ?? "—"}
+                        </span>
                       )}
                     </div>
-                  </div>
-
-                  {/* Company */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Company <span className="text-blue-500">?</span>
-                    </span>
-                    <span className="text-sm text-gray-900 ml-4">
-                      {companyText || "—"}
-                    </span>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Right Column */}
+                {/* Static right */}
                 <div className="space-y-6">
-                  {/* Department */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Department <span className="text-blue-500">?</span>
-                    </span>
-                    <span className="text-sm text-gray-900 ml-4">
-                      {departmentText || "—"}
-                    </span>
-                  </div>
-
-                  {/* Manager */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Manager <span className="text-blue-500">?</span>
-                    </span>
-                    <div className="ml-4 flex items-center">
-                      {info.manager ? (
-                        <>
-                          <img
-                            src={info.manager.image}
-                            alt={info.manager.name}
-                            className="w-6 h-6 rounded-full mr-2"
-                            onError={(e) =>
-                              (e.currentTarget.src =
-                                "https://via.placeholder.com/24x24.png?text=👤")
-                            }
-                          />
-                          <span className="text-sm text-gray-900">
-                            {info.manager.name}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-sm text-gray-400">—</span>
-                      )}
+                  {[
+                    { label: "Department", value: departmentText },
+                    { label: "Coach", value: info.coach?.name ?? "—" },
+                    { label: "Manager", value: info.manager?.name ?? "—" },
+                  ].map((field, idx) => (
+                    <div key={idx} className="flex items-start">
+                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
+                        {field.label}
+                      </span>
+                      <span className="text-sm text-gray-900 ml-4">{field.value}</span>
                     </div>
-                  </div>
-
-                  {/* Coach */}
-                  <div className="flex items-start">
-                    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
-                      Coach <span className="text-blue-500">?</span>
-                    </span>
-                    <div className="ml-4 flex items-center">
-                      {info.coach ? (
-                        <>
-                          <img
-                            src={info.coach.image}
-                            alt={info.coach.name}
-                            className="w-6 h-6 rounded-full mr-2"
-                            onError={(e) =>
-                              (e.currentTarget.src =
-                                "https://via.placeholder.com/24x24.png?text=👤")
-                            }
-                          />
-                          <span className="text-sm text-gray-900">
-                            {info.coach.name}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-sm text-gray-400">—</span>
-                      )}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
+
+              {/* Save / Cancel */}
+              {isEditing && (
+                <div className="flex gap-2 mt-6">
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-1 px-3 py-1 bg-[#65435C] text-white rounded-full hover:bg-[#54344c] transition"
+                  >
+                    <Save className="w-4 h-4" /> Save
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="flex items-center gap-1 px-3 py-1 bg-[#65435C] text-white rounded-full hover:bg-[#54344c] transition"
+                  >
+                    <X className="w-4 h-4" /> Cancel
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Employee Photo */}
+            {/* Photo */}
             <div className="ml-8 flex-shrink-0">
               <img
                 src={info.image}
                 alt={info.full_name}
                 className="w-32 h-40 rounded-lg object-cover border border-gray-200"
                 onError={(e) =>
-                  (e.currentTarget.src =
-                    "https://via.placeholder.com/128x160.png?text=No+Photo")
+                (e.currentTarget.src =
+                  "https://via.placeholder.com/128x160.png?text=No+Photo")
                 }
               />
             </div>
@@ -316,11 +317,10 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -329,10 +329,10 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
         </div>
 
         <div className="p-8">
-          {activeTab === "resume" && <ResumeTab employee={employee} />}
-          {activeTab === "work" && <WorkInfoTab employee={employee} />}
-          {activeTab === "private" && <PrivateInfoTab employee={employee} />}
-          {activeTab === "settings" && <SettingsTab employee={employee} />}
+          {activeTab === "resume" && <ResumeTab employee={employee} isAdmin={isAdmin}/>}
+          {activeTab === "work" && <WorkInfoTab employee={employee} isAdmin={isAdmin}/>}
+          {activeTab === "private" && <PrivateInfoTab employee={employee} isAdmin={isAdmin}/>}
+          {activeTab === "settings" && <SettingsTab employee={employee} isAdmin={isAdmin}/>}
         </div>
       </div>
     </div>
