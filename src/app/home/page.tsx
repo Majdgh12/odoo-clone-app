@@ -10,7 +10,7 @@ import { initializeEmployees } from "@/lib/getEmployees";
 import router from "next/router";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 
 
 export default function Home() {

@@ -29,6 +29,7 @@ export default function Page() {
   const [departments, setDepartments] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
 
   // ✅ Check session & role
   useEffect(() => {
@@ -62,6 +63,28 @@ export default function Page() {
     }
   }, [loading]);
 
+  // ✅ Fetch selected employee data when ID changes
+  useEffect(() => {
+    if (!selectedEmployeeId) {
+      setSelectedEmployee(null);
+      return;
+    }
+
+    const fetchEmployee = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/employees/${selectedEmployeeId}`);
+        if (!res.ok) throw new Error("Failed to fetch employee data");
+        const data = await res.json();
+        setSelectedEmployee(data);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load employee data");
+      }
+    };
+
+    fetchEmployee();
+  }, [selectedEmployeeId]);
+
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -81,33 +104,36 @@ export default function Page() {
         <nav className="space-y-3">
           <Button
             variant="outline"
-            className={`w-full justify-start ${selectedMenu === "employees" ? "bg-[#65435C] text-white" : ""
-              }`}
+            className={`w-full justify-start ${
+              selectedMenu === "employees" ? "bg-[#65435C] text-white" : ""
+            }`}
             onClick={() => setSelectedMenu("employees")}
           >
             Add Employee
           </Button>
           <Button
             variant="outline"
-            className={`w-full justify-start ${selectedMenu === "departments" ? "bg-[#65435C] text-white" : ""
-              }`}
+            className={`w-full justify-start ${
+              selectedMenu === "departments" ? "bg-[#65435C] text-white" : ""
+            }`}
             onClick={() => setSelectedMenu("departments")}
-
           >
             Departments
           </Button>
           <Button
             variant="outline"
-            className={`w-full justify-start ${selectedMenu === "assign-manager" ? "bg-[#65435C] text-white" : ""
-              }`}
+            className={`w-full justify-start ${
+              selectedMenu === "assign-manager" ? "bg-[#65435C] text-white" : ""
+            }`}
             onClick={() => setSelectedMenu("assign-manager")}
           >
             Assign Manager
           </Button>
           <Button
             variant="outline"
-            className={`w-full justify-start ${selectedMenu === "update-employee" ? "bg-[#65435C] text-white" : ""
-              }`}
+            className={`w-full justify-start ${
+              selectedMenu === "update-employee" ? "bg-[#65435C] text-white" : ""
+            }`}
             onClick={() => setSelectedMenu("update-employee")}
           >
             Update Employee
@@ -131,7 +157,7 @@ export default function Page() {
 
         {selectedMenu === "update-employee" && (
           <div className="space-y-4">
-            {/* Select Employee */}
+            {/* Employee Select */}
             <Select
               value={selectedEmployeeId || ""}
               onValueChange={(val) => setSelectedEmployeeId(val)}
@@ -142,16 +168,16 @@ export default function Page() {
               <SelectContent>
                 {employees.map((e) => (
                   <SelectItem key={e._id} value={e._id}>
-                    {e.full_name}
+                    {e.full_name || e.user?.general_info?.full_name || "No Name"}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* Render UpdateEmployee only if an employee is selected */}
-            {selectedEmployeeId && (
+            {/* Update Form */}
+            {selectedEmployee && (
               <UpdateEmployee
-                employeeId={selectedEmployeeId}
+                employeeId={selectedEmployeeId!}
                 employees={employees}
                 departments={departments}
               />
