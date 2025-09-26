@@ -126,15 +126,17 @@ const Navbar: React.FC<NavbarProps> = ({
             <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
 
             {/* PLUS BUTTON (desktop) */}
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="ml-2 bg-[#65435c] text-white p-2 rounded flex items-center gap-2"
-              aria-label="Add employee"
-              title="Add employee"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden lg:inline text-sm">Add</span>
-            </button>
+            {role === 'admin' && (
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="ml-2 bg-[#65435c] text-white p-2 rounded flex items-center gap-2"
+                aria-label="Add employee"
+                title="Add employee"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden lg:inline text-sm">Add</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import type { Employee } from "../../lib/types";
 interface ResumeTabProps {
   employee: Employee;
   isAdmin?: boolean;
+  canEdit?: boolean;
 }
 
 interface Skill {
