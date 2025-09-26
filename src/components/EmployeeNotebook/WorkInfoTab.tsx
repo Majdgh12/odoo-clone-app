@@ -7,6 +7,7 @@ import type { Employee, WorkInfo, WorkPermit } from "../../lib/types";
 interface WorkInfoTabProps {
   employee: Employee;
   isAdmin?: boolean;
+  canEdit?: boolean;
   refreshData?: () => void; // Optional callback to refresh parent data
 }
 

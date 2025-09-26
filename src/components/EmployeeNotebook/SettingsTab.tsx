@@ -7,6 +7,7 @@ import type { Employee } from "../../lib/types";
 interface SettingsTabProps {
   employee: Employee;
   isAdmin?: boolean;
+  canEdit?: boolean;
   refreshData?: () => void;
 }
 

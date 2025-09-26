@@ -1,10 +1,11 @@
-// src/components/Sidebar/Sidebar.tsx (or wherever your Sidebar lives)
+// src/components/Sidebar/Sidebar.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, Users2, ChevronRight, Plus } from "lucide-react";
 import type { Employee } from "@/lib/types";
 import Departments from "@/components/dashboard_components/Departments";
+import { useSession } from "next-auth/react";
 
 interface Department {
   _id: string;
@@ -29,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onFilterUpdate,
   children,
 }) => {
+  const { data: session, status } = useSession();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [counts, setCounts] = useState({
@@ -38,6 +40,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   // modal state for adding department
   const [showAddDept, setShowAddDept] = useState(false);
+
+  // determine if current user is admin
+  const isAdmin = session?.user?.role === "admin";
 
   // Function to fetch departments (used on mount and after closing modal)
   const fetchDepartments = async () => {
@@ -64,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       let deptName =
         typeof emp.user?.general_info?.department === "string"
           ? emp.user.general_info.department
-          : emp.user.general_info.department?.name ?? null;
+          : emp.user?.general_info?.department?.name ?? null;
 
       if (deptName) {
         deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
@@ -87,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         let deptName =
           typeof emp.user?.general_info?.department === "string"
             ? emp.user.general_info.department
-            : emp.user.general_info.department?.name ?? null;
+            : emp.user?.general_info?.department?.name ?? null;
 
         return (
           deptName &&
@@ -153,15 +158,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </h3>
               </div>
 
-              {/* Plus button: opens Add Department modal */}
+              {/* Plus button: opens Add Department modal (only for admin) */}
               <div className="mb-3">
-                <button
-                  onClick={() => setShowAddDept(true)}
-                  className="p-1 rounded-md hover:bg-gray-100 transition-colors text-gray-600"
-                  title="Create department"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                {isAdmin ? (
+                  <button
+                    onClick={() => setShowAddDept(true)}
+                    className="p-1 rounded-md hover:bg-gray-100 transition-colors text-gray-600"
+                    title="Create department"
+                    aria-label="Create department"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                ) : null}
               </div>
             </div>
 
@@ -224,8 +232,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <Departments
           isModal={true}
           onClose={handleModalClose}
-          // Allow Departments to refresh the provided list in the component itself.
-          // We don't pass setDepartments here because the sidebar fetches its own list after close.
+          // Sidebar will refresh departments after modal closes
         />
       )}
     </>
