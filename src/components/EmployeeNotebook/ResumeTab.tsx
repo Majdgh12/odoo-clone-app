@@ -1,32 +1,33 @@
+// src/components/EmployeeNotebook/ResumeTab.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Trash2, TrendingUp, Edit2, X } from "lucide-react";
 import type { Employee } from "../../lib/types";
+import ResumeEditForm from "./ResumeForm";
 
 interface ResumeTabProps {
   employee: Employee;
   isAdmin?: boolean;
-  canEdit?: boolean;
+  onUpdated?: (updatedResume: any) => void; // optional callback
 }
 
-interface Skill {
-  skill_name?: string;
-  name?: string;
-  percentage: number;
-}
+const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false, onUpdated }) => {
+  // Normalize & keep local copy so we can update after save without full refresh
+  const initialResume = useMemo(() => {
+    const general_resume = employee?.user?.general_resume ?? {};
+    const resume = general_resume.resume ?? {};
+    const skills = general_resume.skills ?? {};
+    return {
+      resume,
+      skills,
+    };
+  }, [employee]);
 
-const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false }) => {
-  // ------------------ Modal state and editable form state ------------------
+  const [local, setLocal] = useState(() => initialResume);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    experiences: employee.user?.general_resume?.resume?.experience ?? [],
-    education: employee.user?.general_resume?.resume?.education ?? [],
-    programming: employee.user?.general_resume?.skills?.programming_languages ?? [],
-    languages: employee.user?.general_resume?.skills?.language ?? [],
-    otherSkills: employee.user?.general_resume?.skills?.other_skills ?? [],
-  });
 
+  // Helpers (same as your old code)
   const getSkillColor = (percentage: number) => {
     if (percentage >= 90) return "bg-purple-600";
     if (percentage >= 70) return "bg-purple-500";
@@ -44,7 +45,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false }) => {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
-    if (dateString.toLowerCase() === "present") return "Current";
+    if (String(dateString).toLowerCase() === "present") return "Current";
     const date = new Date(dateString);
     return isNaN(date.getTime())
       ? "-"
@@ -55,120 +56,41 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false }) => {
         });
   };
 
-  const handleInputChange = (
-    index: number,
-    field: string,
-    value: string | number,
-    type: "experiences" | "education" | "programming" | "languages" | "otherSkills"
-  ) => {
-    const updatedArray = [...formData[type]];
-    updatedArray[index][field] = value;
-    setFormData({ ...formData, [type]: updatedArray });
-  };
-
- const handleSave = async () => {
-  try {
-    // Transform the data structure to match API expectations
-    const requestBody = {
-      education: formData.education,
-      experience: formData.experiences,        // Note: experiences -> experience
-      languageSkills: formData.languages,     // Note: languages -> languageSkills
-      otherSkills: formData.otherSkills,
-      programmingSkills: formData.programming  // Note: programming -> programmingSkills
-    };
-
-   
-
-    const response = await fetch(
-      `http://localhost:5000/api/resume/employee/${employee._id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      }
-    );
-
-    console.log("🔍 Response status:", response.status);
-    console.log("🔍 Response status text:", response.statusText);
-
-    // Get response text regardless of status
-    const responseText = await response.text();
-    console.log("🔍 Response body:", responseText);
-
-    if (!response.ok) {
-      // Try to parse as JSON for error details
-      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-      try {
-        const errorData = JSON.parse(responseText);
-        errorMessage += `\nServer error: ${JSON.stringify(errorData, null, 2)}`;
-      } catch {
-        errorMessage += `\nServer response: ${responseText}`;
-      }
-      
-      throw new Error(errorMessage);
-    }
-
-    // Parse successful response
-    const updated = JSON.parse(responseText);
-    console.log("✅ Resume updated:", updated);
-
-    setIsEditing(false);
-    
-  } catch (error) {
-    
-    // Show user-friendly error message
-    alert(`Failed to update resume: ${error.message}`);
-  }
-};
+  // defensive access
+  const experiences = local.resume?.experience ?? [];
+  const education = local.resume?.education ?? [];
+  const languages = local.skills?.language ?? [];
+  const programming = local.skills?.programming_languages ?? [];
+  const otherSkills = local.skills?.other_skills ?? [];
 
   const renderSkillGroup = (
     title: string,
-    skillArray: Skill[],
-    type?: "programming" | "languages" | "otherSkills"
+    skillArray: Array<{ skill_name?: string; name?: string; percentage?: number }>
   ) => (
-    <div className="mb-4">
-      <h4 className="font-medium text-gray-800 mb-2">{title}</h4>
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="font-medium text-gray-800">{title}</h4>
+      </div>
       {skillArray.length > 0 ? (
         skillArray.map((skill, index) => {
-          const name = skill.skill_name ?? skill.name ?? "-";
+          const name = skill.skill_name ?? skill.name ?? skill.language_name ?? "-";
           const percentage = skill.percentage ?? 0;
           const derivedLevel = getDerivedLevel(percentage);
 
           return (
-            <div key={index} className="flex flex-col mb-3">
-              <div className="flex items-center justify-between mb-1">
-                {type ? (
-                  <>
-                    <input
-                      type="text"
-                      className="border p-1 text-sm flex-1 mr-2"
-                      value={name}
-                      onChange={(e) =>
-                        handleInputChange(index, "skill_name", e.target.value, type)
-                      }
-                    />
-                    <input
-                      type="number"
-                      className="border p-1 text-sm w-16"
-                      value={percentage}
-                      onChange={(e) =>
-                        handleInputChange(index, "percentage", Number(e.target.value), type)
-                      }
-                    />
-                  </>
-                ) : (
-                  <>
-                    <span className="text-sm text-gray-700">{name}</span>
-                    <span className="text-sm text-gray-600">{derivedLevel}</span>
-                    <span className="text-sm font-medium">{percentage}%</span>
-                  </>
-                )}
+            <div key={index} className="group mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-gray-700">{name}</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">{derivedLevel}</span>
+                  <span className="text-sm font-medium">{percentage}%</span>
+                </div>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full ${getSkillColor(percentage)}`}
                   style={{ width: `${percentage}%` }}
-                ></div>
+                />
               </div>
             </div>
           );
@@ -179,81 +101,105 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false }) => {
     </div>
   );
 
+  const handleSaved = (updated: any) => {
+    // backend might return different shape; we try to normalize like the old code expects
+    const normalized = {
+      resume: updated?.resume ?? updated?.resume ?? updated?.resume ?? updated,
+      skills: {
+        programming_languages:
+          updated?.programmingSkills ?? updated?.skills?.programming_languages ?? updated?.programming_languages ?? programming,
+        language: updated?.languageSkills ?? updated?.skills?.language ?? updated?.language ?? languages,
+        other_skills: updated?.otherSkills ?? updated?.skills?.other_skills ?? updated?.other_skills ?? otherSkills,
+      },
+    };
+
+    // Merge with existing to avoid losing sections
+    setLocal((prev: any) => ({
+      resume: { ...(prev.resume || {}), ...(normalized.resume || {}) },
+      skills: { ...(prev.skills || {}), ...(normalized.skills || {}) },
+    }));
+
+    if (onUpdated) onUpdated(normalized);
+    setIsEditing(false);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* ------------------ Display Resume Info ------------------ */}
       <div className="lg:col-span-2 space-y-8">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-            <span>RESUME</span>
-            {isAdmin && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">RESUME</h3>
+
+            {/* Global pencil edit button */}
+            <div>
               <button
+                onClick={() => setIsEditing(true)}
+                title="Edit Resume"
                 className="ml-4 p-2 rounded transition flex items-center justify-center"
                 style={{ backgroundColor: "#65435C" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#54344c")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#65435C")}
-                title="Edit Employee"
-                onClick={() => setIsEditing(true)}
               >
                 <Edit2 className="w-5 h-5 text-white" />
               </button>
-            )}
-          </h3>
-        </div>
-
-        {/* Experiences Display */}
-        <div className="mb-8">
-          <h4 className="font-medium text-gray-800 mb-4">Experience</h4>
-          <div className="space-y-4">
-            {employee.user?.general_resume?.resume?.experience?.map((exp, index) => (
-              <div key={index} className="flex items-start space-x-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
-                  {index < employee.user.general_resume.resume.experience.length - 1 && (
-                    <div className="w-px h-16 bg-gray-300 mt-2"></div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {formatDate(exp.date_from)} - {formatDate(exp.date_to)}
-                    </span>
-                  </div>
-                  <h5 className="font-semibold text-gray-900 mt-1">{exp.title}</h5>
-                  <p className="text-gray-600 text-sm mt-1">{exp.job_description}</p>
-                </div>
-              </div>
-            ))}
+            </div>
           </div>
-        </div>
 
-        {/* Education Display */}
-        <div>
-          <h4 className="font-medium text-gray-800 mb-4">Education</h4>
-          <div className="space-y-4">
-            {employee.user?.general_resume?.resume?.education?.map((edu, index) => (
-              <div key={index} className="flex items-start space-x-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
-                  {index < employee.user.general_resume.resume.education.length - 1 && (
-                    <div className="w-px h-16 bg-gray-300 mt-2"></div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {formatDate(edu.from_date)} - {formatDate(edu.to_date)}
-                    </span>
+          <div className="mb-8">
+            <h4 className="font-medium text-gray-800 mb-4">Experience</h4>
+            <div className="space-y-4">
+              {experiences.length > 0 ? (
+                experiences.map((exp: any, index: number) => (
+                  <div key={index} className="flex items-start space-x-4 group">
+                    <div className="flex flex-col items-center">
+                      <div className="w-3 h-3 bg-teal-500 rounded-full" />
+                      {index < experiences.length - 1 && <div className="w-px h-16 bg-gray-300 mt-2" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">
+                          {formatDate(exp.date_from)} - {formatDate(exp.date_to)}
+                        </span>
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mt-1">{exp.title ?? "-"}</h5>
+                      <p className="text-gray-600 text-sm mt-1">{exp.job_description ?? "-"}</p>
+                    </div>
                   </div>
-                  <h5 className="font-semibold text-gray-900 mt-1">{edu.title}</h5>
-                </div>
-              </div>
-            ))}
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">No experience added yet.</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-medium text-gray-800 mb-4">Education</h4>
+            <div className="space-y-4">
+              {education.length > 0 ? (
+                education.map((edu: any, index: number) => (
+                  <div key={index} className="flex items-start space-x-4 group">
+                    <div className="flex flex-col items-center">
+                      <div className="w-3 h-3 bg-teal-500 rounded-full" />
+                      {index < education.length - 1 && <div className="w-px h-16 bg-gray-300 mt-2" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">
+                          {formatDate(edu.from_date)} - {formatDate(edu.to_date)}
+                        </span>
+                      </div>
+                      <h5 className="font-semibold text-gray-900 mt-1">{edu.title ?? "-"}</h5>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">No education added yet.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Skills Display */}
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">SKILLS</h3>
@@ -263,170 +209,19 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false }) => {
           </div>
         </div>
 
-        {renderSkillGroup(
-          "Programming Languages",
-          employee.user?.general_resume?.skills?.programming_languages ?? []
-        )}
-        {renderSkillGroup("Languages", employee.user?.general_resume?.skills?.language ?? [])}
-        {renderSkillGroup("Other Skills", employee.user?.general_resume?.skills?.other_skills ?? [])}
+        {renderSkillGroup("Programming Languages", programming)}
+        {renderSkillGroup("Languages", languages)}
+        {renderSkillGroup("Other Skills", otherSkills)}
       </div>
 
-      {/* ------------------ Modal for Editing ------------------ */}
+      {/* Modal edit form */}
       {isEditing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-opacity-30 backdrop-blur-sm"></div>
-
-          {/* Modal Content */}
-          <div className="relative bg-white rounded-xl shadow-xl w-11/12 max-w-4xl p-6 overflow-y-auto max-h-[90vh]">
-            {/* Close Button */}
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
-              onClick={() => setIsEditing(false)}
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Header */}
-            <h3 className="text-2xl font-bold mb-6 text-gray-900">Edit Resume</h3>
-
-            {/* Experiences Section */}
-            <div className="mb-6 p-4 rounded-lg bg-gray-50 shadow-sm">
-              <h4 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-                Experiences
-              </h4>
-              {formData.experiences.map((exp, index) => (
-                <div key={index} className="flex flex-col space-y-2 mb-4">
-                  <input
-                    type="text"
-                    className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                    value={exp.title}
-                    onChange={(e) =>
-                      handleInputChange(index, "title", e.target.value, "experiences")
-                    }
-                    placeholder="Title"
-                  />
-                  <textarea
-                    className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none resize-none"
-                    value={exp.job_description}
-                    onChange={(e) =>
-                      handleInputChange(index, "job_description", e.target.value, "experiences")
-                    }
-                    placeholder="Job Description"
-                  />
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                      value={exp.date_from}
-                      onChange={(e) =>
-                        handleInputChange(index, "date_from", e.target.value, "experiences")
-                      }
-                      placeholder="From Date"
-                    />
-                    <input
-                      type="text"
-                      className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                      value={exp.date_to}
-                      onChange={(e) =>
-                        handleInputChange(index, "date_to", e.target.value, "experiences")
-                      }
-                      placeholder="To Date"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Education Section */}
-            <div className="mb-6 p-4 rounded-lg bg-gray-50 shadow-sm">
-              <h4 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-                Education
-              </h4>
-              {formData.education.map((edu, index) => (
-                <div key={index} className="flex flex-col space-y-2 mb-4">
-                  <input
-                    type="text"
-                    className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                    value={edu.title}
-                    onChange={(e) =>
-                      handleInputChange(index, "title", e.target.value, "education")
-                    }
-                    placeholder="Title"
-                  />
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                      value={edu.from_date}
-                      onChange={(e) =>
-                        handleInputChange(index, "from_date", e.target.value, "education")
-                      }
-                      placeholder="From Date"
-                    />
-                    <input
-                      type="text"
-                      className="border border-gray-300 p-2 w-full rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                      value={edu.to_date}
-                      onChange={(e) =>
-                        handleInputChange(index, "to_date", e.target.value, "education")
-                      }
-                      placeholder="To Date"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Skills Section */}
-            <div className="mb-6 p-4 rounded-lg bg-gray-50 shadow-sm">
-              <h4 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">Skills</h4>
-              {["programming", "languages", "otherSkills"].map((type) => (
-                <div key={type} className="mb-4">
-                  <h5 className="font-medium text-gray-700 capitalize mb-2">
-                    {type.replace(/([A-Z])/g, " $1")}
-                  </h5>
-                  {(formData as any)[type].map((skill: any, index: number) => (
-                    <div key={index} className="flex items-center space-x-2 mb-2">
-                      <input
-                        type="text"
-                        className="border border-gray-300 p-2 rounded-lg flex-1 focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                        value={skill.name ?? skill.skill_name ?? ""}
-                        onChange={(e) =>
-                          handleInputChange(index, "name", e.target.value, type as any)
-                        }
-                        placeholder="Skill Name"
-                      />
-                      <input
-                        type="number"
-                        className="border border-gray-300 p-2 w-20 rounded-lg focus:ring-1 focus:ring-purple-500 focus:outline-none"
-                        value={skill.percentage ?? 0}
-                        onChange={(e) =>
-                          handleInputChange(index, "percentage", e.target.value, type as any)
-                        }
-                        placeholder="%"
-                      />
-                      <button className="text-red-500 hover:text-red-700 transition">
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* Save Button */}
-            <button
-              className="mt-4 px-5 py-2 rounded-lg text-white font-medium transition-colors"
-              style={{ backgroundColor: "#65435C" }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#54344c")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#65435C")}
-              onClick={handleSave}
-            >
-              Save
-            </button>
-          </div>
-        </div>
+        <ResumeEditForm
+          employeeId={employee._id}
+          initialData={{ resume: local.resume, skills: local.skills }}
+          onClose={() => setIsEditing(false)}
+          onSaved={(updated) => handleSaved(updated)}
+        />
       )}
     </div>
   );
