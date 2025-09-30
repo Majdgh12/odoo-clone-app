@@ -9,6 +9,7 @@ import ResumeEditForm from "./ResumeForm";
 interface ResumeTabProps {
   employee: Employee;
   isAdmin?: boolean;
+  canEdit?: boolean;
   onUpdated?: (updatedResume: any) => void; // optional callback
 }
 
@@ -132,6 +133,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false, onUpda
 
             {/* Global pencil edit button */}
             <div>
+              {isAdmin && (
               <button
                 onClick={() => setIsEditing(true)}
                 title="Edit Resume"
@@ -142,6 +144,7 @@ const ResumeTab: React.FC<ResumeTabProps> = ({ employee, isAdmin = false, onUpda
               >
                 <Edit2 className="w-5 h-5 text-white" />
               </button>
+              )}
             </div>
           </div>
 
