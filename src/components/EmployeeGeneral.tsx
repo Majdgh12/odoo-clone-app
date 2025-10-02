@@ -62,20 +62,27 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
       </div>
     );
   }
+// Determine correct image URL
+
+
+
 
   // Permission check
   const isAdmin = session?.user?.role === "admin";
   const isManager = session?.user?.role === "manager";
   const managerDeptId = session?.user?.departmentId;
   const employeeDeptId = employee.user?.general_info?.department?._id ?? employee.department_id;
+  const currentUserId = session?.user?.employeeId;
 
+  // Can edit full info: admin or manager of same department
   const canEdit =
     isAdmin || (isManager && managerDeptId && String(managerDeptId) === String(employeeDeptId));
 
-  console.log("Access check for editing employee:", employee._id);
-  console.log("isAdmin:", isAdmin, "isManager:", isManager);
-  console.log("Manager Dept ID:", managerDeptId, "Employee Dept ID:", employeeDeptId);
-  console.log("Can edit?", canEdit);
+  // Can edit image: admin or the employee themselves
+  const canEditImage =  String(currentUserId) === String(employee._id);
+
+  console.log("Can edit info?", canEdit);
+  console.log("Can edit image?", canEditImage);
 
   const currentIndex = employees.findIndex((e) => String(idOf(e)) === String(idOf(employee)));
 
@@ -83,7 +90,13 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
     if (!employees.length) return;
     const lastIndex = employees.length - 1;
     const newIndex =
-      direction === "next" ? (currentIndex < lastIndex ? currentIndex + 1 : 0) : currentIndex > 0 ? currentIndex - 1 : lastIndex;
+      direction === "next"
+        ? currentIndex < lastIndex
+          ? currentIndex + 1
+          : 0
+        : currentIndex > 0
+        ? currentIndex - 1
+        : lastIndex;
     const newEmployee = employees[newIndex];
     const newId = idOf(newEmployee);
     console.log("Navigating to employee ID:", newId);
@@ -153,15 +166,29 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
       {/* Navigation */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <button onClick={() => router.push("/home")} className="flex items-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors" title="Home">
+          <button
+            onClick={() => router.push("/home")}
+            className="flex items-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+            title="Home"
+          >
             <HomeIcon className="w-5 h-5" />
           </button>
           <div className="flex items-center space-x-4 bg-gray-50 rounded-lg px-4 py-2">
-            <button onClick={() => navigateToEmployee("prev")} className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled={employees.length <= 1}>
+            <button
+              onClick={() => navigateToEmployee("prev")}
+              className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={employees.length <= 1}
+            >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm text-gray-700 font-medium">{currentIndex + 1} / {employees.length}</span>
-            <button onClick={() => navigateToEmployee("next")} className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled={employees.length <= 1}>
+            <span className="text-sm text-gray-700 font-medium">
+              {currentIndex + 1} / {employees.length}
+            </span>
+            <button
+              onClick={() => navigateToEmployee("next")}
+              className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={employees.length <= 1}
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -176,26 +203,55 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
             <div className="flex-1">
               <div className="flex items-center mb-6">
                 {isEditing ? (
-                  <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="text-3xl font-bold text-gray-900 border p-1 rounded w-1/2" />
+                  <input
+                    type="text"
+                    name="full_name"
+                    value={formData.full_name}
+                    onChange={handleChange}
+                    className="text-3xl font-bold text-gray-900 border p-1 rounded w-1/2"
+                  />
                 ) : (
                   <h1 className="text-3xl font-bold text-gray-900 mr-3">{info.full_name ?? "—"}</h1>
                 )}
                 {canEdit && !isEditing && (
-                  <button onClick={() => setIsEditing(true)} className="ml-4 p-2 rounded transition flex items-center justify-center" style={{ backgroundColor: "#65435C" }} title="Edit Employee">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="ml-4 p-2 rounded transition flex items-center justify-center"
+                    style={{ backgroundColor: "#65435C" }}
+                    title="Edit Employee"
+                  >
                     <Edit2 className="w-5 h-5 text-white" />
                   </button>
                 )}
               </div>
 
-              <p className="text-lg text-gray-600 mb-8">{isEditing ? <input type="text" name="job_position" value={formData.job_position} onChange={handleChange} className="border p-1 rounded w-1/2" /> : info.job_position ?? "—"}</p>
+              <p className="text-lg text-gray-600 mb-8">
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="job_position"
+                    value={formData.job_position}
+                    onChange={handleChange}
+                    className="border p-1 rounded w-1/2"
+                  />
+                ) : (
+                  info.job_position ?? "—"
+                )}
+              </p>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-6">
                 <div className="space-y-6">
-                  {["work_email","work_phone","work_mobile","tags","company"].map((field) => (
+                  {["work_email", "work_phone", "work_mobile", "tags", "company"].map((field) => (
                     <div key={field} className="flex items-start">
-                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">{field.replace("_"," ").toUpperCase()}</span>
+                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">{field.replace("_", " ").toUpperCase()}</span>
                       {isEditing ? (
-                        <input type="text" name={field} value={(formData as any)[field]} onChange={handleChange} className="border p-1 rounded w-1/2 ml-4" />
+                        <input
+                          type="text"
+                          name={field}
+                          value={(formData as any)[field]}
+                          onChange={handleChange}
+                          className="border p-1 rounded w-1/2 ml-4"
+                        />
                       ) : (
                         <span className="text-sm text-gray-900 ml-4">{(info as any)[field] ?? "—"}</span>
                       )}
@@ -219,18 +275,62 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
 
               {isEditing && (
                 <div className="flex gap-2 mt-6">
-                  <button onClick={handleSave} className="flex items-center gap-1 px-3 py-1 bg-[#65435C] text-white rounded-full hover:bg-[#54344c] transition">
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-1 px-3 py-1 bg-[#65435C] text-white rounded-full hover:bg-[#54344c] transition"
+                  >
                     <Save className="w-4 h-4" /> Save
                   </button>
-                  <button onClick={handleCancel} className="flex items-center gap-1 px-3 py-1 bg-[#65435C] text-white rounded-full hover:bg-[#54344c] transition">
+                  <button
+                    onClick={handleCancel}
+                    className="flex items-center gap-1 px-3 py-1 bg-[#65435C] text-white rounded-full hover:bg-[#54344c] transition"
+                  >
                     <X className="w-4 h-4" /> Cancel
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="ml-8 flex-shrink-0">
-              <img src={info.image} alt={info.full_name} className="w-32 h-40 rounded-lg object-cover border border-gray-200" onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/128x160.png?text=No+Photo")} />
+            <div className="ml-8 flex-shrink-0 relative">
+              <img
+                src={`http://localhost:5000/uploads/${info.image}`}
+                alt={info.full_name}
+                className="w-32 h-40 rounded-lg object-cover border border-gray-200"
+                onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/128x160.png?text=No+Photo")}
+              />
+              {canEditImage && (
+                <label className="absolute bottom-0 right-0 bg-gray-800 text-white p-1 rounded cursor-pointer text-xs">
+                  Edit
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const formData = new FormData();
+                      formData.append("image", file);
+
+                      try {
+                        const res = await fetch(
+                          `http://localhost:5000/api/employees/${employee._id}/image`,
+                          {
+                            method: "PUT",
+                            body: formData,
+                          }
+                        );
+                        if (!res.ok) throw new Error("Failed to update image");
+                        const data = await res.json();
+                        console.log("Image updated:", data);
+                        router.refresh();
+                      } catch (err) {
+                        console.error("❌ Error updating image:", err);
+                      }
+                    }}
+                  />
+                </label>
+              )}
             </div>
           </div>
         </div>
@@ -238,8 +338,16 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
         {/* Tabs */}
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8 px-8">
-            {["resume","work","private","settings"].map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab)} className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"}`}>
+            {["resume", "work", "private", "settings"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === tab
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}

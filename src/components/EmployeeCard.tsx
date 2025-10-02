@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -11,19 +10,10 @@ type EmployeeCardProps = {
   job_position: string;
   work_email: string;
   work_phone: string;
-  image: string;
+  image?: string;
   tags?: string[];
   status: "online" | "offline";
 };
-
-function isRemoteUrl(src: string) {
-  try {
-    const url = new URL(src);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
 
 export default function EmployeeCard({
   id,
@@ -35,10 +25,16 @@ export default function EmployeeCard({
   tags = [],
   status,
 }: EmployeeCardProps) {
-  const useFallback = isRemoteUrl(image);
   const [isImageHovered, setIsImageHovered] = useState(false);
 
-  const hasImage = image && image.trim() !== "";
+  // Determine the correct image URL
+  const imageUrl = image
+    ? image.startsWith("http://") || image.startsWith("https://")
+      ? image
+      : `http://localhost:5000/uploads/${image}` // backend URL
+    : "https://via.placeholder.com/128x160.png?text=No+Photo"; // fallback placeholder
+
+  const hasImage = !!imageUrl;
 
   return (
     <Link href={`/employees/${id}`} className="block w-full h-full">
@@ -48,47 +44,37 @@ export default function EmployeeCard({
         {hasImage && (
           <div className="relative w-20 h-20 flex-shrink-0 overflow-visible z-0">
             <div
-              className="relative w-full h-full rounded-lg "
+              className="relative w-full h-full rounded-lg"
               onMouseEnter={() => setIsImageHovered(true)}
               onMouseLeave={() => setIsImageHovered(false)}
             >
-              {useFallback ? (
-                <img
-                  src={image}
-                  alt={full_name}
-                  className="w-full h-full object-cover rounded-lg cursor-pointer"
-                />
-              ) : (
-                <Image
-                  src={image}
-                  alt={full_name}
-                  fill
-                  className="object-cover rounded-lg cursor-pointer"
-                />
-              )}
+              <img
+                src={imageUrl}
+                alt={full_name}
+                className="w-full h-full object-cover rounded-lg cursor-pointer"
+                onError={(e) =>
+                  (e.currentTarget.src =
+                    "https://via.placeholder.com/128x160.png?text=No+Photo")
+                }
+              />
             </div>
 
-            {/* Hover preview above the image - SQUARE */}
+            {/* Hover preview */}
             <div
               className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
                 w-32 h-32 rounded-lg border shadow-lg bg-white 
-                transition-opacity duration-200 z-10 pointer-events-none 
+                transition-opacity duration-200 z-10 pointer-events-none
                 ${isImageHovered ? "opacity-100" : "opacity-0"}`}
             >
-              {useFallback ? (
-                <img
-                  src={image}
-                  alt={full_name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <Image
-                  src={image}
-                  alt={full_name}
-                  fill
-                  className="object-cover"
-                />
-              )}
+              <img
+                src={imageUrl}
+                alt={full_name}
+                className="w-full h-full object-cover"
+                onError={(e) =>
+                  (e.currentTarget.src =
+                    "https://via.placeholder.com/128x160.png?text=No+Photo")
+                }
+              />
             </div>
           </div>
         )}
@@ -123,20 +109,17 @@ export default function EmployeeCard({
           </div>
 
           {/* Tags Section */}
-          <div className="flex flex-wrap gap-1 min-h-[1.5rem] ">
-            {tags.length > 0 ? (
-              tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-0.5 text-xs rounded-full border bg-gray-100 text-gray-700 whitespace-nowrap"
-                >
-                  {tag}
-                </span>
-              ))
-            ) : (
-              // Empty space placeholder
-              <div className="w-full h-0.5" />
-            )}
+          <div className="flex flex-wrap gap-1 min-h-[1.5rem]">
+            {tags.length > 0
+              ? tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-0.5 text-xs rounded-full border bg-gray-100 text-gray-700 whitespace-nowrap"
+                  >
+                    {tag}
+                  </span>
+                ))
+              : <div className="w-full h-0.5" />}
           </div>
         </div>
       </div>
