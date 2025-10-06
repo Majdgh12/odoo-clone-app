@@ -27,14 +27,29 @@ export default function EmployeeCard({
 }: EmployeeCardProps) {
   const [isImageHovered, setIsImageHovered] = useState(false);
 
-  // Determine the correct image URL
-  const imageUrl = image
-    ? image.startsWith("http://") || image.startsWith("https://")
-      ? image
-      : `http://localhost:5000/uploads/${image}` // backend URL
-    : "https://via.placeholder.com/128x160.png?text=No+Photo"; // fallback placeholder
+  // Helper function to get the correct image URL
+  const getImageUrl = (): string => {
+    // If no image, return placeholder
+    if (!image) {
+      return "https://via.placeholder.com/128x160.png?text=No+Photo";
+    }
 
-  const hasImage = !!imageUrl;
+    // If image is already a base64 data URL, use it directly
+    if (image.startsWith("data:image/")) {
+      return image;
+    }
+
+    // If image is a full URL (http/https), use it directly
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return image;
+    }
+
+    // Otherwise, assume it's a filename from old system - construct URL
+    return `http://localhost:5000/uploads/${image}`;
+  };
+
+  const imageUrl = getImageUrl();
+  const hasImage = !!image;
 
   return (
     <Link href={`/employees/${id}`} className="block w-full h-full">
@@ -52,14 +67,14 @@ export default function EmployeeCard({
                 src={imageUrl}
                 alt={full_name}
                 className="w-full h-full object-cover rounded-lg cursor-pointer"
-                onError={(e) =>
-                  (e.currentTarget.src =
-                    "https://via.placeholder.com/128x160.png?text=No+Photo")
-                }
+                onError={(e) => {
+                  console.error(`Failed to load image for ${full_name}`);
+                  e.currentTarget.src = "https://via.placeholder.com/128x160.png?text=No+Photo";
+                }}
               />
             </div>
 
-            {/* Hover preview */}
+            {/* Hover preview - Enlarged image on hover */}
             <div
               className={`absolute top-1/2 left-1/2 transform -translate-x-1/4 -translate-y-1/4
                 w-32 h-32 rounded-lg border shadow-lg bg-white 
@@ -69,13 +84,19 @@ export default function EmployeeCard({
               <img
                 src={imageUrl}
                 alt={full_name}
-                className="w-full h-full object-cover"
-                onError={(e) =>
-                  (e.currentTarget.src =
-                    "https://via.placeholder.com/128x160.png?text=No+Photo")
-                }
+                className="w-full h-full object-cover rounded-lg"
+                onError={(e) => {
+                  e.currentTarget.src = "https://via.placeholder.com/128x160.png?text=No+Photo";
+                }}
               />
             </div>
+          </div>
+        )}
+
+        {/* Placeholder if no image */}
+        {!hasImage && (
+          <div className="w-20 h-20 flex-shrink-0 rounded-lg bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400 text-xs">No Photo</span>
           </div>
         )}
 
