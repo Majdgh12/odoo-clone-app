@@ -80,7 +80,7 @@ const Navbar: React.FC<NavbarProps> = ({
       case 'manager':
         return (
           <div className="flex items-center gap-2">
-            <button className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]" onClick={() => router.push('/home')}>Home</button>
+            <button className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]" onClick={() => router.push('/homeEmployee')}>Home</button>
             <button className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]" onClick={() => router.push('/dashboard_manager')}>Dashboard</button>
             <button className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]" onClick={() => { if ((session?.user as any)?.employeeId) router.push(`/employees/${(session?.user as any).employeeId}`); }}>Profile</button>
             <button onClick={() => signOut()} className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]">Logout</button>

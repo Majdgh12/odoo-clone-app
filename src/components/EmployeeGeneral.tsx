@@ -218,7 +218,7 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push("/home")}
+            onClick={() => router.push("/homeEmployee")}
             className="flex items-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
             title="Home"
           >
