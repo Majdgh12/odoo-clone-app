@@ -4,7 +4,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react"; // session hook
+import { useSession } from "next-auth/react";
 import type { Employee } from "../lib/types";
 import ResumeTab from "./EmployeeNotebook/ResumeTab";
 import WorkInfoTab from "./EmployeeNotebook/WorkInfoTab";
@@ -17,7 +17,11 @@ interface EmployeeGeneralProps {
   employees: Employee[];
 }
 
-// Helper to convert field to string
+const idOf = (obj: any): string | undefined => {
+  if (!obj) return undefined;
+  return obj.id ?? obj._id ?? obj.toString?.();
+};
+
 const toStringField = (val: any): string => {
   if (typeof val === "string") return val;
   if (val && typeof val === "object") {
@@ -33,7 +37,6 @@ const toStringField = (val: any): string => {
   return "";
 };
 
-// Helper to normalize tags
 const normalizeTags = (tags: any): string[] => {
   if (!tags) return [];
   if (Array.isArray(tags)) {
@@ -64,10 +67,21 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
     );
   }
 
-  const isAdmin = session?.user?.role === "admin"; // admin check
-  const currentIndex = employees.findIndex(
-    (e) => String(idOf(e)) === String(idOf(employee))
-  );
+  const isAdmin = session?.user?.role === "admin";
+  const isManager = session?.user?.role === "manager";
+  const managerDeptId = session?.user?.departmentId;
+  const employeeDeptId = employee.user?.general_info?.department?._id ?? employee.department_id;
+  const currentUserId = session?.user?.employeeId;
+
+  const canEdit =
+    isAdmin || (isManager && managerDeptId && String(managerDeptId) === String(employeeDeptId));
+
+  const canEditImage = String(currentUserId) === String(employee._id);
+
+  console.log("Can edit info?", canEdit);
+  console.log("Can edit image?", canEditImage);
+
+  const currentIndex = employees.findIndex((e) => String(idOf(e)) === String(idOf(employee)));
 
   const navigateToEmployee = (direction: "prev" | "next") => {
     if (!employees.length) return;
@@ -91,7 +105,6 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
   const companyText = toStringField(info.company);
   const tags = normalizeTags(info.tags);
 
-  // Editable mode
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     full_name: info.full_name ?? "",
@@ -154,13 +167,75 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
     });
   };
 
+  // Convert file to base64
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB");
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert("Please select an image file");
+      return;
+    }
+
+    try {
+      // Convert image to base64
+      const base64Image = await convertToBase64(file);
+
+      // Send to backend
+      const res = await fetch(
+        `http://localhost:5000/api/employees/${employee._id}/image`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ image: base64Image }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to update image");
+      
+      const data = await res.json();
+      console.log("Image updated:", data);
+      router.refresh();
+    } catch (err) {
+      console.error("❌ Error updating image:", err);
+      alert("Failed to update image. Please try again.");
+    }
+  };
+
+  // Get image source - use base64 from database or placeholder
+  const getImageSrc = () => {
+    if (info.image && info.image.startsWith('data:image/')) {
+      return info.image; // Use base64 directly
+    }
+    return "https://via.placeholder.com/128x160.png?text=No+Photo";
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push("/home")}
+            onClick={() => router.push("/homeEmployee")}
             className="flex items-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
             title="Home"
           >
@@ -381,14 +456,21 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
             {/* Photo */}
             <div className="ml-8 flex-shrink-0">
               <img
-                src={info.image}
+                src={getImageSrc()}
                 alt={info.full_name}
                 className="w-32 h-40 rounded-lg object-cover border border-gray-200"
-                onError={(e) =>
-                (e.currentTarget.src =
-                  "https://via.placeholder.com/128x160.png?text=No+Photo")
-                }
               />
+              {canEditImage && (
+                <label className="absolute bottom-0 right-0 bg-gray-800 text-white p-1 rounded cursor-pointer text-xs hover:bg-gray-700 transition">
+                  Edit
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                </label>
+              )}
             </div>
           </div>
         </div>
