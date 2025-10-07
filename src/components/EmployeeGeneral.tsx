@@ -2,7 +2,7 @@
 // components/EmployeeGeneral.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { Employee } from "../lib/types";
@@ -23,33 +23,40 @@ const idOf = (obj: any): string | undefined => {
 };
 
 const toStringField = (val: any): string => {
-  if (!val) return "";
   if (typeof val === "string") return val;
-  if (val._id) return String(val._id);
-  if (val.name) return String(val.name);
-  if (val.company) return String(val.company);
-  return JSON.stringify(val);
+  if (val && typeof val === "object") {
+    if (typeof val.name === "string") return val.name;
+    if (typeof val.company === "string") return val.company;
+    if (val._id) return String(val._id);
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return String(val);
+    }
+  }
+  return "";
 };
 
 const normalizeTags = (tags: any): string[] => {
   if (!tags) return [];
-  if (Array.isArray(tags)) return tags.map((t) => (typeof t === "string" ? t : t?.name ?? String(t)));
+  if (Array.isArray(tags)) {
+    return tags.map((t) => (typeof t === "string" ? t : t?.name ?? String(t)));
+  }
   return [typeof tags === "string" ? tags : tags?.name ?? String(tags)];
+};
+
+// Get ID of object
+const idOf = (obj: any): string | undefined => {
+  if (!obj) return undefined;
+  return obj.id ?? obj._id ?? obj.toString?.();
 };
 
 const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }) => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session } = useSession(); // session data
   const [activeTab, setActiveTab] = useState("resume");
 
-  useEffect(() => {
-    console.log("EmployeeGeneral mounted");
-    console.log("Session:", session);
-    console.log("Current employee:", employee);
-  }, [session, employee]);
-
   if (!employee) {
-    console.log("Employee not found");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -85,11 +92,11 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
           ? currentIndex + 1
           : 0
         : currentIndex > 0
-        ? currentIndex - 1
-        : lastIndex;
+          ? currentIndex - 1
+          : lastIndex;
+
     const newEmployee = employees[newIndex];
     const newId = idOf(newEmployee);
-    console.log("Navigating to employee ID:", newId);
     if (newId) router.push(`/employees/${newId}`);
   };
 
@@ -103,32 +110,43 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
     full_name: info.full_name ?? "",
     job_position: info.job_position ?? "",
     work_email: info.work_email ?? "",
-    work_phone: info.work_phone ?? "",
-    work_mobile: info.work_mobile ?? "",
+    work_phone: info.work_phone ?? 0,
+    work_mobile: info.work_mobile ?? 0,
     tags: tags.join(", "),
     company: companyText ?? "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Form changed:", e.target.name, e.target.value);
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value,type } = e.target;
+
+  if (name === "work_phone" || name === "work_mobile") {
+    const numericValue = value === "" ? 0 : parseInt(value, 10);
+    if (!isNaN(numericValue)) {
+      setFormData((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: 0 }));
+    }
+  } else {
+    // Handle other fields (email, name, etc.)
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+};
 
   const handleSave = async () => {
-    if (!canEdit) {
-      console.warn("User cannot edit this employee");
-      return;
-    }
     try {
-      console.log("Saving employee data:", formData);
       const employeeId = idOf(employee);
       const res = await fetch(`http://localhost:5000/api/employees/${employeeId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (!res.ok) throw new Error("Failed to update employee");
-      console.log("Employee updated successfully");
+      if (!res.ok){
+          const errortext = await res.text();
+      console.log("✅ Employee updated:", errortext);
+      console.log("status code:", res.status);
+      throw new Error(`Failed to update employee: ${res.status} - ${errortext}`);
+    }
+    
       setIsEditing(false);
       router.refresh();
     } catch (err) {
@@ -137,14 +155,13 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
   };
 
   const handleCancel = () => {
-    console.log("Edit cancelled, resetting form");
     setIsEditing(false);
     setFormData({
       full_name: info.full_name ?? "",
       job_position: info.job_position ?? "",
       work_email: info.work_email ?? "",
-      work_phone: info.work_phone ?? "",
-      work_mobile: info.work_mobile ?? "",
+      work_phone: info.work_phone ?? 0,
+      work_mobile: info.work_mobile ?? 0,
       tags: tags.join(", "),
       company: companyText ?? "",
     });
@@ -224,6 +241,7 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
           >
             <HomeIcon className="w-5 h-5" />
           </button>
+
           <div className="flex items-center space-x-4 bg-gray-50 rounded-lg px-4 py-2">
             <button
               onClick={() => navigateToEmployee("prev")}
@@ -262,13 +280,21 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
                     className="text-3xl font-bold text-gray-900 border p-1 rounded w-1/2"
                   />
                 ) : (
-                  <h1 className="text-3xl font-bold text-gray-900 mr-3">{info.full_name ?? "—"}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900 mr-3">
+                    {info.full_name ?? "—"}
+                  </h1>
                 )}
-                {canEdit && !isEditing && (
+                {isAdmin && !isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
                     className="ml-4 p-2 rounded transition flex items-center justify-center"
                     style={{ backgroundColor: "#65435C" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#54344c")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#65435C")
+                    }
                     title="Edit Employee"
                   >
                     <Edit2 className="w-5 h-5 text-white" />
@@ -291,25 +317,107 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
               </p>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-6">
-                <div className="space-y-6">
-                  {["work_email", "work_phone", "work_mobile", "tags", "company"].map((field) => (
-                    <div key={field} className="flex items-start">
-                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">{field.replace("_", " ").toUpperCase()}</span>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          name={field}
-                          value={(formData as any)[field]}
-                          onChange={handleChange}
-                          className="border p-1 rounded w-1/2 ml-4"
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-900 ml-4">{(info as any)[field] ?? "—"}</span>
-                      )}
-                    </div>
-                  ))}
+                {/* Editable left */}
+                {/*abdalmajid edit here*/}
+<div className="space-y-6">
+  {/* Work Email */}
+  <div className="flex items-start">
+    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">WORK EMAIL</span>
+    {isEditing ? (
+      <input
+        type="email"
+        name="work_email"
+        value={formData.work_email}
+        onChange={handleChange}
+        className="border p-1 rounded w-1/2 ml-4"
+        placeholder="user@company.com"
+      />
+    ) : (
+      <span className="text-sm text-gray-900 ml-4">{info.work_email ?? "—"}</span>
+    )}
+  </div>
+
+  {/* Work Phone */}
+  <div className="flex items-start">
+    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">WORK PHONE</span>
+    {isEditing ? (
+      <div className="flex gap-2 ml-4">
+      <input
+        type="number"
+        name="work_phone"
+        value={formData.work_phone}
+        onChange={handleChange}
+        className="border p-1 rounded w-1/2 ml-4"
+        placeholder="71123456"
+        min="0"
+      />
+      </div>
+    ) : (
+      <span className="text-sm text-gray-900 ml-4">
+        {info.work_phone ?? "—"}
+      </span>
+    )}
+  </div>
+
+  {/* Work Mobile */}
+  <div className="flex items-start">
+    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">WORK MOBILE</span>
+    {isEditing ? (
+      <div className="flex gap-2 ml-4">
+ 
+      <input
+        type="number"
+        name="work_mobile"
+        value={formData.work_mobile}
+        onChange={handleChange}
+        className="border p-1 rounded w-1/2 ml-4"
+        placeholder="71123456"
+        min="0"
+      />
+      </div>
+    ) : (
+      <span className="text-sm text-gray-900 ml-4">
+        {info.work_mobile?? "—"}
+      </span>
+    )}
+  </div>
+
+  {/* Tags */}
+  <div className="flex items-start">
+    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">TAGS</span>
+    {isEditing ? (
+      <input
+        type="text"
+        name="tags"
+        value={formData.tags}
+        onChange={handleChange}
+        className="border p-1 rounded w-1/2 ml-4"
+      />
+    ) : (
+      <span className="text-sm text-gray-900 ml-4">{info.tags ?? "—"}</span>
+    )}
+  </div>
+
+  {/* Company */}
+  <div className="flex items-start">
+    <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">COMPANY</span>
+    {isEditing ? (
+      <input
+        type="text"
+        name="company"
+        value={formData.company}
+        onChange={handleChange}
+        className="border p-1 rounded w-1/2 ml-4"
+      />
+    ) : (
+      <span className="text-sm text-gray-900 ml-4">{info.company ?? "—"}</span>
+    )}
+  </div>
+</div>
+        {/* abdalmajid edit end */}          
                 </div>
 
+                {/* Static right */}
                 <div className="space-y-6">
                   {[
                     { label: "Department", value: departmentText },
@@ -317,13 +425,16 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
                     { label: "Manager", value: info.manager?.name ?? "—" },
                   ].map((field, idx) => (
                     <div key={idx} className="flex items-start">
-                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">{field.label}</span>
+                      <span className="text-sm text-gray-500 w-24 flex-shrink-0 mt-1">
+                        {field.label}
+                      </span>
                       <span className="text-sm text-gray-900 ml-4">{field.value}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              
 
+              {/* Save / Cancel */}
               {isEditing && (
                 <div className="flex gap-2 mt-6">
                   <button
@@ -342,7 +453,8 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
               )}
             </div>
 
-            <div className="ml-8 flex-shrink-0 relative">
+            {/* Photo */}
+            <div className="ml-8 flex-shrink-0">
               <img
                 src={getImageSrc()}
                 alt={info.full_name}
@@ -366,27 +478,31 @@ const EmployeeGeneral: React.FC<EmployeeGeneralProps> = ({ employee, employees }
         {/* Tabs */}
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8 px-8">
-            {["resume", "work", "private", "settings"].map((tab) => (
+            {[
+              { id: "resume", label: "Resume" },
+              { id: "work", label: "Work Information" },
+              { id: "private", label: "Private Information" },
+              { id: "settings", label: "Settings" },
+            ].map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab.label}
               </button>
             ))}
           </nav>
         </div>
 
         <div className="p-8">
-          {activeTab === "resume" && <ResumeTab employee={employee} isAdmin={canEdit} />}
-          {activeTab === "work" && <WorkInfoTab employee={employee} isAdmin={canEdit} />}
-          {activeTab === "private" && <PrivateInfoTab employee={employee} isAdmin={canEdit} />}
-          {activeTab === "settings" && <SettingsTab employee={employee} isAdmin={canEdit} />}
+          {activeTab === "resume" && <ResumeTab employee={employee} isAdmin={isAdmin}/>}
+          {activeTab === "work" && <WorkInfoTab employee={employee} isAdmin={isAdmin}/>}
+          {activeTab === "private" && <PrivateInfoTab employee={employee} isAdmin={isAdmin}/>}
+          {activeTab === "settings" && <SettingsTab employee={employee} isAdmin={isAdmin}/>}
         </div>
       </div>
     </div>
