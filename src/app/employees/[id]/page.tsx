@@ -1,7 +1,7 @@
 // app/employees/[id]/page.tsx
 import EmployeeGeneral from "@/components/EmployeeGeneral";
 import { getEmployees, getEmployeeById, initializeEmployees } from "@/lib/getEmployees";
-import { init } from "next/dist/compiled/webpack/webpack";
+
 
 export default async function EmployeeDetailsPage({
   params,

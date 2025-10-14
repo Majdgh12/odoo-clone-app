@@ -19,8 +19,8 @@ export interface GeneralInfo {
   full_name: string;
   job_position: string;
   work_email: string;
-  work_phone: string;
-  work_mobile: string;
+  work_phone: number;
+  work_mobile: number;
   tags: string[];
   company: string;
   department: string | { id: string; name: string };
