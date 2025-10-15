@@ -36,10 +36,19 @@ const HomePage = () => {
     setError(null);
 
     try {
-      const endpoint =
-        session.user.role === "manager" && departmentId
-          ? `http://localhost:5000/api/projects?departmentId=${departmentId}`
-          : `http://localhost:5000/api/projects`;
+      let endpoint = "http://localhost:5000/api/projects";
+
+      if (
+        (session.user.role === "employee" || session.user.role === "team_lead") &&
+        departmentId
+      ) {
+        endpoint = `http://localhost:5000/api/projects?departmentId=${departmentId}`;
+      }
+
+      if (session.user.role === "manager" && departmentId) {
+        endpoint = `http://localhost:5000/api/projects?departmentId=${departmentId}`;
+      }
+
 
       const res = await fetch(endpoint, { cache: "no-store" });
       if (!res.ok) {
@@ -81,12 +90,12 @@ const HomePage = () => {
         currentPage={1}
         totalPages={1}
         itemsPerPage={10}
-        onSearch={() => {}}
-        onFilterChange={() => {}}
-        onGroupByChange={() => {}}
-        onViewTypeChange={() => {}}
-        onPageChange={() => {}}
-        onExport={() => {}}
+        onSearch={() => { }}
+        onFilterChange={() => { }}
+        onGroupByChange={() => { }}
+        onViewTypeChange={() => { }}
+        onPageChange={() => { }}
+        onExport={() => { }}
       />
 
       <div className="pt-24 px-6 flex flex-col gap-6">
@@ -95,7 +104,8 @@ const HomePage = () => {
 
         {!loading && !error && projects.length > 0 && (
           <>
-            {session?.user?.role === "manager" ? (
+            {session?.user?.role === "manager" || session?.user?.role === "employee" ||
+              session?.user?.role === "team_lead" ? (
               <>
                 <h2 className="text-2xl font-semibold mb-2">
                   {projects[0].department_id?.name || "My Department"}
