@@ -144,6 +144,21 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
         alert("Failed to create project: " + (data.message || "Unknown error"));
         return;
       }
+      //ksxbk
+      // 🔹 Safely extract project ID from response
+      const projectId = data?.data?._id;
+
+      if (!projectId) {
+        console.warn(
+          "Project ID not found in response. Team lead will not be assigned.",
+          data
+        );
+      }
+
+      // 🔹 Assign team lead if selected and project ID exists
+      if (formData.team_lead_id && projectId) {
+        await assignTeamLead(projectId, formData.team_lead_id);
+      }
 
       // 🔹 Safely extract project ID from response
       const projectId = data?.data?._id;
@@ -257,6 +272,31 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
                     </option>
                   ))}
               </select>
+              <div className="border px-2 py-1 rounded w-full max-h-40 overflow-y-auto">
+                <p className="font-medium mb-1">Select Members:</p>
+                {employees
+                  .filter((emp) => emp._id !== formData.team_lead_id) // exclude team lead
+                  .map((emp) => (
+                    <label key={emp._id} className="flex items-center gap-2 mb-1">
+                      <input
+                        type="checkbox"
+                        value={emp._id}
+                        checked={formData.members.includes(emp._id)}
+                        onChange={(e) => {
+                          const { checked, value } = e.target;
+                          setFormData((prev) => ({
+                            ...prev,
+                            members: checked
+                              ? [...prev.members, value]
+                              : prev.members.filter((id) => id !== value),
+                          }));
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span>{emp.full_name}</span>
+                    </label>
+                  ))}
+              </div>
 
               <input
                 type="date"
