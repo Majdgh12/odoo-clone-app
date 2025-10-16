@@ -144,7 +144,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
         alert("Failed to create project: " + (data.message || "Unknown error"));
         return;
       }
-
+      //ksxbk
       // 🔹 Safely extract project ID from response
       const projectId = data?.data?._id;
 
@@ -241,22 +241,31 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
                   </option>
                 ))}
               </select>
-
-              <select
-                multiple
-                name="members"
-                value={formData.members}
-                onChange={handleMembersChange}
-                className="border px-2 py-1 rounded w-full"
-              >
+              <div className="border px-2 py-1 rounded w-full max-h-40 overflow-y-auto">
+                <p className="font-medium mb-1">Select Members:</p>
                 {employees
-                  .filter((emp) => emp._id !== formData.team_lead_id) // 🔹 Exclude team lead
+                  .filter((emp) => emp._id !== formData.team_lead_id) // exclude team lead
                   .map((emp) => (
-                    <option key={emp._id} value={emp._id}>
-                      {emp.full_name}
-                    </option>
+                    <label key={emp._id} className="flex items-center gap-2 mb-1">
+                      <input
+                        type="checkbox"
+                        value={emp._id}
+                        checked={formData.members.includes(emp._id)}
+                        onChange={(e) => {
+                          const { checked, value } = e.target;
+                          setFormData((prev) => ({
+                            ...prev,
+                            members: checked
+                              ? [...prev.members, value]
+                              : prev.members.filter((id) => id !== value),
+                          }));
+                        }}
+                        className="w-4 h-4"
+                      />
+                      <span>{emp.full_name}</span>
+                    </label>
                   ))}
-              </select>
+              </div>
 
               <input
                 type="date"
