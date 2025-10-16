@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react"; // Icon from lucide
 import { useSession } from "next-auth/react";
 
@@ -19,6 +20,7 @@ export default function ProjectCard({ project, onDelete }: { project: Project; o
   const { data: session } = useSession();
   const userRole = session?.user.role;
   const [hovered, setHovered] = useState(false);
+  const router=useRouter();
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -46,9 +48,13 @@ export default function ProjectCard({ project, onDelete }: { project: Project; o
     }
   };
 
+  const handleClick=()=>{
+    router.push(`/project/${project._id}`);
+  }
   return (
-    <Link href={`/projects/${project._id}`} className="block w-full h-full">
+    // <Link href={`/projects/${project._id}`} className="block w-full h-full">
       <div
+        onClick={handleClick}
         className={`relative w-full h-auto min-h-fit flex flex-col gap-2 p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition cursor-pointer ${
           hovered ? "ring-1 ring-purple-300" : ""
         }`}
@@ -112,6 +118,6 @@ export default function ProjectCard({ project, onDelete }: { project: Project; o
           )}
         </div>
       </div>
-    </Link>
+    // </Link>
   );
 }

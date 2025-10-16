@@ -160,6 +160,21 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
         await assignTeamLead(projectId, formData.team_lead_id);
       }
 
+      // 🔹 Safely extract project ID from response
+      const projectId = data?.data?._id;
+
+      if (!projectId) {
+        console.warn(
+          "Project ID not found in response. Team lead will not be assigned.",
+          data
+        );
+      }
+
+      // 🔹 Assign team lead if selected and project ID exists
+      if (formData.team_lead_id && projectId) {
+        await assignTeamLead(projectId, formData.team_lead_id);
+      }
+
       // 🔹 Reset form and close modal
       setShowModal(false);
       setFormData({
@@ -240,6 +255,22 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
                     {emp.full_name}
                   </option>
                 ))}
+              </select>
+
+              <select
+                multiple
+                name="members"
+                value={formData.members}
+                onChange={handleMembersChange}
+                className="border px-2 py-1 rounded w-full"
+              >
+                {employees
+                  .filter((emp) => emp._id !== formData.team_lead_id) // 🔹 Exclude team lead
+                  .map((emp) => (
+                    <option key={emp._id} value={emp._id}>
+                      {emp.full_name}
+                    </option>
+                  ))}
               </select>
               <div className="border px-2 py-1 rounded w-full max-h-40 overflow-y-auto">
                 <p className="font-medium mb-1">Select Members:</p>
