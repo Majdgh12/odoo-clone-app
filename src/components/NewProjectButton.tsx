@@ -20,7 +20,6 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
   session,
   onProjectCreated,
 }) => {
-  // ✅ Hooks should be at the top always
   const [showModal, setShowModal] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [formData, setFormData] = useState({
@@ -35,36 +34,34 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
     tags: "",
   });
 
-  // ✅ useEffect never inside conditions
   useEffect(() => {
     if (showModal && session?.user?.departmentId) {
       fetchEmployees(session.user.departmentId);
     }
   }, [showModal, session?.user?.departmentId]);
 
- const fetchEmployees = async (departmentId: string) => {
-  try {
-    const res = await fetch(
-      `http://localhost:5000/api/employees/department/${departmentId}`
-    );
-    const data = await res.json();
+  const fetchEmployees = async (departmentId: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/employees/department/${departmentId}`
+      );
+      const data = await res.json();
 
-    console.log("📥 Employees API Response:", data);
+      console.log("📥 Employees API Response:", data);
 
-    if (Array.isArray(data)) {
-      setEmployees(data);
-    } else if (Array.isArray(data.employees)) {
-      setEmployees(data.employees);
-    } else {
-      console.error("❌ Invalid employee data format:", data);
+      if (Array.isArray(data)) {
+        setEmployees(data);
+      } else if (Array.isArray(data.employees)) {
+        setEmployees(data.employees);
+      } else {
+        console.error("❌ Invalid employee data format:", data);
+        setEmployees([]);
+      }
+    } catch (err) {
+      console.error("❌ Failed to fetch employees", err);
       setEmployees([]);
     }
-  } catch (err) {
-    console.error("❌ Failed to fetch employees", err);
-    setEmployees([]);
-  }
-};
-
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -73,6 +70,36 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // 🔹 Removed assignTeamLead from here — project does not exist yet
+  };
+
+  const assignTeamLead = async (projectId: string, teamLeadId: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/projects/${projectId}/assign-team-lead`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ team_lead_id: teamLeadId }),
+        }
+      );
+
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        console.warn("No JSON returned from server");
+      }
+
+      if (!res.ok) {
+        console.error("Failed to assign team lead:", data);
+      } else {
+        console.log("✅ Team lead assigned:", data);
+      }
+    } catch (err) {
+      console.error("❌ Error assigning team lead:", err);
+    }
   };
 
   const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -91,6 +118,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
     }
 
     try {
+      // 🔹 Prepare payload for project creation
       const payload = {
         ...formData,
         manager_id: session.user.employeeId,
@@ -101,6 +129,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
 
       console.log("📤 Sending payload:", payload);
 
+      // 🔹 Create project
       const res = await fetch("http://localhost:5000/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -108,6 +137,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
       });
 
       const data = await res.json();
+      console.log("📤 Project creation response:", data);
 
       if (!res.ok) {
         console.error("Server error:", data);
@@ -115,6 +145,22 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
         return;
       }
 
+      // 🔹 Safely extract project ID from response
+      const projectId = data?.data?._id;
+
+      if (!projectId) {
+        console.warn(
+          "Project ID not found in response. Team lead will not be assigned.",
+          data
+        );
+      }
+
+      // 🔹 Assign team lead if selected and project ID exists
+      if (formData.team_lead_id && projectId) {
+        await assignTeamLead(projectId, formData.team_lead_id);
+      }
+
+      // 🔹 Reset form and close modal
       setShowModal(false);
       setFormData({
         name: "",
@@ -128,14 +174,15 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
         tags: "",
       });
 
+      // 🔹 Notify parent component of the new project
       onProjectCreated?.(data);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error creating project:", err);
       alert("Failed to create project");
     }
   };
 
-  // 🟡 Conditional rendering happens here, not before hooks
+
   if (!role || role !== "manager") {
     return null;
   }
@@ -202,11 +249,13 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
                 onChange={handleMembersChange}
                 className="border px-2 py-1 rounded w-full"
               >
-                {employees.map((emp) => (
-                  <option key={emp._id} value={emp._id}>
-                    {emp.full_name}
-                  </option>
-                ))}
+                {employees
+                  .filter((emp) => emp._id !== formData.team_lead_id) // 🔹 Exclude team lead
+                  .map((emp) => (
+                    <option key={emp._id} value={emp._id}>
+                      {emp.full_name}
+                    </option>
+                  ))}
               </select>
 
               <input

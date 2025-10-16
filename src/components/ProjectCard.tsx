@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Project {
   _id: string;
@@ -14,10 +15,15 @@ interface Project {
 
 export default function ProjectCard({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
+  const router=useRouter();
 
+  const handleClick=()=>{
+    router.push(`/project/${project._id}`);
+  }
   return (
-    <Link href={`/projects/${project._id}`} className="block w-full h-full">
+    // <Link href={`/projects/${project._id}`} className="block w-full h-full">
       <div
+        onClick={handleClick}
         className={`relative w-full h-auto min-h-fit flex flex-col gap-2 p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition cursor-pointer ${
           hovered ? "ring-1 ring-purple-300" : ""
         }`}
@@ -74,6 +80,6 @@ export default function ProjectCard({ project }: { project: Project }) {
           )}
         </div>
       </div>
-    </Link>
+    // </Link>
   );
 }
