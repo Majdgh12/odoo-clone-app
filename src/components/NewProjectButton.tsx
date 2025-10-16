@@ -144,7 +144,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
         alert("Failed to create project: " + (data.message || "Unknown error"));
         return;
       }
-
+      //ksxbk
       // 🔹 Safely extract project ID from response
       const projectId = data?.data?._id;
 
