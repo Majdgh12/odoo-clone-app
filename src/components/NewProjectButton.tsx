@@ -77,7 +77,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
   const assignTeamLead = async (projectId: string, teamLeadId: string) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/projects/assign-team-lead/${projectId}`,
+        `http://localhost:5000/api/projects/${projectId}/assign-team-lead`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -146,7 +146,7 @@ const NewProjectButton: React.FC<NewProjectButtonProps> = ({
       }
 
       // 🔹 Safely extract project ID from response
-      const projectId = data?.data?.project?._id || data?.project?._id;
+      const projectId = data?.data?._id;
 
       if (!projectId) {
         console.warn(
