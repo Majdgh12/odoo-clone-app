@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/NavbarProject";
 import ProjectCard from "@/components/ProjectCard";
-
+import { useRouter } from "next/navigation";
 interface Project {
   _id: string;
   name: string;
@@ -19,51 +19,71 @@ interface Project {
   priority: string;
   tags: string[];
   meta?: any;
+  tasks?: any[];
 }
 
 const HomePage = () => {
-  const { data: session } = useSession();
+  const { data: session,status } = useSession();
+  const userRole = session?.user.role;
+  const userId = session?.user.id;
   const departmentId = session?.user.departmentId;
-
+const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      alert("Session expired. Please log in again.");
+      router.push("/"); // redirect to login page
+    }
+  }, [status, router]);
 
+  // ✅ fetch all project IDs first (assuming /api/projects returns them)
   const fetchProjects = async () => {
     if (!session?.user) return;
-
     setLoading(true);
     setError(null);
 
     try {
       let endpoint = "http://localhost:5000/api/projects";
 
-      if (
-        (session.user.role === "employee" || session.user.role === "team_lead") &&
-        departmentId
-      ) {
+      if (userRole === "manager" && departmentId) {
         endpoint = `http://localhost:5000/api/projects?departmentId=${departmentId}`;
       }
-
-      if (session.user.role === "manager" && departmentId) {
-        endpoint = `http://localhost:5000/api/projects?departmentId=${departmentId}`;
-      }
-
 
       const res = await fetch(endpoint, { cache: "no-store" });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Server error: ${res.status} — ${text}`);
-      }
+      if (!res.ok) throw new Error("Failed to fetch projects list");
 
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Failed to fetch projects");
+      if (!data.success) throw new Error(data.message);
 
-      setProjects(data.data || []);
+      let projectList: Project[] = data.data || [];
+
+      // ✅ If employee or team lead → fetch project details one by one
+      if (userRole === "employee" || userRole === "team_lead") {
+        const filtered: Project[] = [];
+
+        for (const p of projectList) {
+          const detailRes = await fetch(`http://localhost:5000/api/projects/${p._id}`);
+          const detailData = await detailRes.json();
+
+          if (detailData.success) {
+            const project = detailData.data;
+            const isMember =
+              project.members?.some((m: any) => m._id === userId) ||
+              project.team_lead_id?._id === userId;
+
+            if (isMember) filtered.push(project);
+          }
+        }
+
+        projectList = filtered;
+      }
+       console.log("📦 Projects fetched:", projectList);
+      setProjects(projectList);
     } catch (err: any) {
       console.error("❌ Failed to fetch projects:", err);
       setError(err.message);
-      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -73,9 +93,9 @@ const HomePage = () => {
     fetchProjects();
   }, [session?.user]);
 
-  // Group projects by department for admin
+  // ✅ Group by department for admin
   const groupedProjects: Record<string, Project[]> = {};
-  if (session?.user?.role === "admin") {
+  if (userRole === "admin") {
     projects.forEach((p) => {
       const deptName = p.department_id?.name || "Unknown Department";
       if (!groupedProjects[deptName]) groupedProjects[deptName] = [];
@@ -90,12 +110,12 @@ const HomePage = () => {
         currentPage={1}
         totalPages={1}
         itemsPerPage={10}
-        onSearch={() => { }}
-        onFilterChange={() => { }}
-        onGroupByChange={() => { }}
-        onViewTypeChange={() => { }}
-        onPageChange={() => { }}
-        onExport={() => { }}
+        onSearch={() => {}}
+        onFilterChange={() => {}}
+        onGroupByChange={() => {}}
+        onViewTypeChange={() => {}}
+        onPageChange={() => {}}
+        onExport={() => {}}
       />
 
       <div className="pt-24 px-6 flex flex-col gap-6">
@@ -104,8 +124,7 @@ const HomePage = () => {
 
         {!loading && !error && projects.length > 0 && (
           <>
-            {session?.user?.role === "manager" || session?.user?.role === "employee" ||
-              session?.user?.role === "team_lead" ? (
+            {userRole === "manager" && (
               <>
                 <h2 className="text-2xl font-semibold mb-2">
                   {projects[0].department_id?.name || "My Department"}
@@ -116,8 +135,9 @@ const HomePage = () => {
                   ))}
                 </div>
               </>
-            ) : (
-              // Admin: group projects by department
+            )}
+
+            {userRole === "admin" &&
               Object.entries(groupedProjects).map(([deptName, deptProjects]) => (
                 <div key={deptName}>
                   <h2 className="text-2xl font-semibold mb-2">{deptName}</h2>
@@ -127,7 +147,17 @@ const HomePage = () => {
                     ))}
                   </div>
                 </div>
-              ))
+              ))}
+
+            {(userRole === "employee" || userRole === "team_lead") && (
+              <>
+                <h2 className="text-2xl font-semibold mb-2">My Projects</h2>
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {projects.map((project) => (
+                    <ProjectCard key={project._id} project={project} />
+                  ))}
+                </div>
+              </>
             )}
           </>
         )}
