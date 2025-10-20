@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import PriorityComponent from "./PriorityComponent";
 import StatusComponent from "./StatusComponent";
+import { useSession } from "next-auth/react"; // ✅ import session hook
 
 interface Task {
   _id: string;
@@ -28,7 +29,16 @@ interface TaskDetailsProps {
 }
 
 const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onSave }) => {
-  // 🧠 Normalize the incoming task to prevent "Unassigned" confusion
+  const { data: session } = useSession(); // ✅ access session
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (session?.user) {
+      setRole(session.user.role as string);
+    }
+  }, [session]);
+
+  // 🧠 Normalize the incoming task
   const normalizeTask = (t: Task) => ({
     ...t,
     assignee_name:
@@ -49,7 +59,6 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onSave }) => {
   const [showStageMenu, setShowStageMenu] = useState(false);
 
   useEffect(() => {
-    // Update normalized data if task prop changes
     setTaskData(normalizeTask(task));
   }, [task]);
 
@@ -163,14 +172,25 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onSave }) => {
             <PriorityComponent value={taskData.priority || "normal"} onChange={() => {}} />
           </div>
 
-          {/* Status */}
-          <StatusComponent
-            value={taskData.stage || "todo"}
-            onChange={handleStageChange}
-            showMenu={showStageMenu}
-            onToggleMenu={() => setShowStageMenu(!showStageMenu)}
-            label="Status"
-          />
+          {/* ✅ Status */}
+          {role === "employee" ? (
+            <StatusComponent
+              value={taskData.stage || "todo"}
+              onChange={handleStageChange}
+              showMenu={showStageMenu}
+              onToggleMenu={() => setShowStageMenu(!showStageMenu)}
+              label="Status"
+            />
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Status
+              </label>
+              <p className="mt-1 text-gray-900 bg-gray-50 p-2 rounded-lg shadow-sm">
+                {taskData.stage || "todo"}
+              </p>
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
@@ -181,12 +201,15 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onSave }) => {
             >
               Close
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-[#65435c] text-white rounded-md font-medium hover:bg-[#55394e] transition"
-            >
-              Save Status
-            </button>
+
+            {role === "employee" && (
+              <button
+                type="submit"
+                className="px-4 py-2 bg-[#65435c] text-white rounded-md font-medium hover:bg-[#55394e] transition"
+              >
+                Save Status
+              </button>
+            )}
           </div>
         </form>
       </div>
