@@ -17,7 +17,7 @@ interface NavbarTaskProps {
   onViewTypeChange: (viewType: "grid" | "list" | "kanban") => void;
   onPageChange: (page: number) => void;
   onExport: () => void;
-  onNewClick?: () => void; // optional external handler if needed
+  onNewClick?: () => void;
 }
 
 const NavbarTask: React.FC<NavbarTaskProps> = ({
@@ -36,13 +36,15 @@ const NavbarTask: React.FC<NavbarTaskProps> = ({
   const { data: session } = useSession();
   const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
-
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
   useEffect(() => {
-    if (session?.user) {
+    // ✨ EDIT: Get the role from session.user if available
+    if (session?.user?.role) {
       setRole(session.user.role as string);
-      console.log("Session user in NavbarTask:", session.user);
+      console.log("✅ Session user role:", session.user.role);
+    } else {
+      console.warn("⚠️ No role found in session");
     }
   }, [session]);
 
@@ -72,51 +74,51 @@ const NavbarTask: React.FC<NavbarTaskProps> = ({
     );
   };
 
- return (
-  <>
-    <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 px-4 py-4 z-10">
-      <div className="flex flex-wrap items-center justify-between gap-3 w-full">
-        {/* 🔹 Left side: navigation buttons */}
-        <div className="flex items-center gap-2">
-          {renderRoleButtons()}
-        </div>
+  return (
+    <>
+      <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 px-4 py-4 z-10">
+        <div className="flex flex-wrap items-center justify-between gap-3 w-full">
+          {/* 🔹 Left side: navigation buttons */}
+          <div className="flex items-center gap-2">
+            {renderRoleButtons()}
+          </div>
 
-        {/* 🔹 Center: search bar */}
-        <div className="flex-1 flex justify-center min-w-[200px] max-w-md">
-          <SearchBar onSearch={onSearch} placeholder="Search Tasks..." />
-        </div>
+          {/* 🔹 Center: search bar */}
+          <div className="flex-1 flex justify-center min-w-[200px] max-w-md">
+            <SearchBar onSearch={onSearch} placeholder="Search Tasks..." />
+          </div>
 
-        {/* 🔹 Right side: pagination, view, and add button */}
-        <div className="flex items-center gap-2 flex-wrap justify-end">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={totalTasks}
-            itemsPerPage={itemsPerPage}
-            onPageChange={onPageChange}
-          />
+          {/* 🔹 Right side: pagination, view, and add button */}
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalTasks}
+              itemsPerPage={itemsPerPage}
+              onPageChange={onPageChange}
+            />
 
-          <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
+            <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
 
-          {/* ✅ Single Add Task button (responsive and visible once) */}
-          {/* {role==="teamlead" && */}
-             <button
-            onClick={() => (onNewClick ? onNewClick() : setShowAddTaskModal(true))}
-            className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
-          >
-            + New Task
-          </button>
-          {/* }
-          */}
+            {/* ✨ EDIT: Show "+ New Task" only if role is teamlead */}
+            {role === "team_lead" && (
+              <button
+                onClick={() => (onNewClick ? onNewClick() : setShowAddTaskModal(true))}
+                className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
+              >
+                + New Task
+              </button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* 🔹 Task Modal */}
-    {showAddTaskModal && (
-      <NewTask onClose={() => setShowAddTaskModal(false)} onSave={handleTaskAdded} />
-    )}
-  </>
-);
+      {/* 🔹 Task Modal */}
+      {showAddTaskModal && (
+        <NewTask onClose={() => setShowAddTaskModal(false)} onSave={handleTaskAdded} />
+      )}
+    </>
+  );
 };
+
 export default NavbarTask;

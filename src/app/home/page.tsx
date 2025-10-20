@@ -13,6 +13,7 @@ interface AppItem {
 const apps: AppItem[] = [
   { name: "Project", icon: "/Images/project.png", link: "/project" },
   { name: "Employees", icon: "/Images/employee.png", link: "/homeEmployee" },
+  { name: "Time Off", icon: "/Images/timeoff.jpg", link: "/timeoff" },
 ];
 
 export default function HomePage() {
