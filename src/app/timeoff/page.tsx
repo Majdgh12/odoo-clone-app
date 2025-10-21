@@ -3,11 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Navbar from "@/components/NavbarTimeOff";
-import { CalendarDays, Clock, Plus, Check, X, CloudCog } from "lucide-react";
+import { CalendarDays, Clock, Plus, Check, X } from "lucide-react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { log } from "console";
 
 interface TimeOffBalance {
   paid: number;
@@ -17,17 +16,19 @@ interface TimeOffBalance {
 interface TimeOffRequest {
   _id: string;
   type: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | Date;
+  endDate: string | Date;
   status: "Pending" | "Approved" | "Rejected";
   numberOfDays: number;
-  employeeName?: string; // optional if you want to display who requested it
+  employeeName?: string;
   approvedBy?: string;
+  employeeId?: string;
+  scope?: "own" | "department"; // 👈 for managers
 }
 
 export default function TimeOffPage() {
   const { data: session } = useSession();
-  const role = (session?.user as any)?.role; // "Admin" | "Manager" | "Employee"
+  const role = (session?.user as any)?.role; // "admin" | "manager" | "employee"
   const employeeId = (session?.user as any)?.employeeId;
 
   const [balance, setBalance] = useState<TimeOffBalance>({ paid: 0, compensatory: 0 });
@@ -40,49 +41,66 @@ export default function TimeOffPage() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  // 🧭 Load balance + requests
+  // Load balance + requests
   useEffect(() => {
     if (employeeId) {
       fetchBalance();
       fetchRequests();
     }
   }, [employeeId, role]);
-  console.log("Role in TimeOffPage:", role);
-  console.log("Employee ID in TimeOffPage:", employeeId);
-  // Fetch balance (admins don’t need balance)
+
+  // Fetch balance (not for admins)
   const fetchBalance = async () => {
-    if (role === "Admin") return;
+    if (role === "admin") return;
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/timeoff/balance/${employeeId}`);
+      const { data } = await axios.get(
+        `http://localhost:5000/api/timeoff/balance/${employeeId}`
+      );
       setBalance({
         paid: data.paid || 0,
         compensatory: data.compensatory || 0,
       });
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching balance:", err);
     }
   };
 
-  // Fetch requests based on role
+  // Fetch requests
   const fetchRequests = async () => {
     try {
-      let url = "";
-      if (role === "Admin") {
-        // Admin sees only requests from managers
-        url = "http://localhost:5000/api/timeoff/requests?role=Manager";
+      let data: TimeOffRequest[] = [];
+
+      if (role === "admin") {
+        const res = await axios.get(
+          "http://localhost:5000/api/timeoff/requests?role=manager"
+        );
+        data = res.data;
+      } else if (role === "manager") {
+        // manager: fetch both own + department
+        const [ownRes, deptRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/timeoff/requests/employee/${employeeId}`),
+          axios.get(`http://localhost:5000/api/timeoff/requests/department/${employeeId}`)
+        ]);
+
+        data = [
+          ...ownRes.data.map((r: any) => ({ ...r, scope: "own" })),
+          ...deptRes.data.map((r: any) => ({ ...r, scope: "department" }))
+        ];
       } else {
-        // Employees and Managers see their own requests
-        url = `http://localhost:5000/api/timeoff/requests/employee/${employeeId}`;
+        const res = await axios.get(
+          `http://localhost:5000/api/timeoff/requests/employee/${employeeId}`
+        );
+        data = res.data;
       }
 
-      const { data } = await axios.get(url);
       setRequests(data);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching requests:", err);
+      setRequests([]);
     }
   };
 
-  // Submit new time off request
+  // Submit request
   const handleSubmitRequest = async () => {
     if (!startDate || !endDate) return alert("Please select both start and end dates.");
     try {
@@ -91,7 +109,7 @@ export default function TimeOffPage() {
         employee_id: employeeId,
         start_date: startDate,
         end_date: endDate,
-        type: type
+        type,
       });
       setShowRequestModal(false);
       setStartDate(null);
@@ -100,15 +118,37 @@ export default function TimeOffPage() {
       fetchRequests();
       fetchBalance();
     } catch (err) {
-      console.error(err);
+      console.error("Error submitting request:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Approve/Reject
+  const handleApproveReject = async (requestId: string, action: "approve" | "reject") => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/timeoff/requests/${requestId}/${action}`,
+        { approver_id: employeeId }
+      );
+      fetchRequests();
+    } catch (err) {
+      console.error(`Error ${action} request:`, err);
+    }
+  };
+
+  // format helper
+  const formatDate = (date: string | Date) => {
+    if (!date) return "—";
+    try {
+      return new Date(date).toLocaleDateString();
+    } catch {
+      return String(date);
+    }
+  };
+
   return (
     <>
-      {/* ✅ Top Navbar */}
       <Navbar
         totalEmployees={0}
         currentPage={1}
@@ -123,8 +163,8 @@ export default function TimeOffPage() {
       />
 
       <div className="pt-24 px-6 max-w-6xl mx-auto space-y-6">
-        {/* 💼 BALANCE SECTION */}
-        {role !== "Admin" && (
+        {/* Balance */}
+        {role !== "admin" && (
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center border">
               <CalendarDays className="w-6 h-6 mb-2 text-[#65435c]" />
@@ -139,39 +179,54 @@ export default function TimeOffPage() {
           </div>
         )}
 
-        {/* 🗓️ REAL CALENDAR SECTION */}
+        {/* Calendar */}
         <div className="bg-white rounded-lg shadow p-4 border">
           <h2 className="text-xl font-bold mb-4">Calendar</h2>
-          <p className="text-gray-500 text-sm mb-4">
-            Pick a date range to preview or request time off.
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <DatePicker
-              selectsRange
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(update: [Date | null, Date | null]) => {
-                setStartDate(update[0]);
-                setEndDate(update[1]);
-              }}
-              inline
-            />
-            {startDate && endDate && (
-              <div className="text-sm text-gray-600">
-                Selected: {startDate.toLocaleDateString()} → {endDate.toLocaleDateString()}
-              </div>
-            )}
-          </div>
+          <div className="grid grid-cols-3 gap-6">
+    {Array.from({ length: 12 }).map((_, i) => {
+      const monthDate = new Date();
+      monthDate.setMonth(monthDate.getMonth() + i); // shift by i months
+
+      return (
+        <DatePicker
+          key={i}
+          selected={startDate}
+          onChange={(date: Date | null) => {
+            if (!date) return;
+            if (!startDate) {
+              setStartDate(date);
+            } else {
+              setEndDate(date);
+              setShowRequestModal(true);
+            }
+          }}
+          inline
+          minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)}
+          openToDate={monthDate} // 👈 start from current month
+          showMonthYearPicker={false} // show full days, not just picker
+          calendarClassName="rounded-lg border shadow-sm"
+        />
+      );
+    })}
+  </div>
+          {startDate && endDate && (
+            <div className="text-sm text-gray-600">
+              Selected: {formatDate(startDate)} → {formatDate(endDate)}
+            </div>
+          )}
         </div>
 
-        {/* 📝 REQUEST LIST */}
+        {/* Requests table */}
         <div className="bg-white rounded-lg shadow p-4 border">
           <div className="flex justify-between mb-4">
             <h2 className="text-xl font-bold">
-              {role === "Admin" ? "Managers Time Off Requests" : "My Time Off Requests"}
+              {role === "admin"
+                ? "Managers Time Off Requests"
+                : role === "manager"
+                  ? "My & Department Requests"
+                  : "My Time Off Requests"}
             </h2>
-            {/* 🔹 Only show button if NOT admin */}
-            {role !== "Admin" && (
+            {role !== "admin" && (
               <button
                 onClick={() => setShowRequestModal(true)}
                 className="bg-[#65435c] text-white px-4 py-2 rounded flex items-center gap-2"
@@ -192,20 +247,39 @@ export default function TimeOffPage() {
                   <th className="p-2">Start</th>
                   <th className="p-2">End</th>
                   <th className="p-2">Days</th>
-                  {role === "Admin" && <th className="p-2">Employee</th>}
+                  {(role === "admin" || role === "manager") && <th className="p-2">Employee</th>}
                   <th className="p-2">Status</th>
+                  <th className="p-2">Approved By</th>
+                  {(role === "admin" || role === "manager") && <th className="p-2">Actions</th>}
                 </tr>
               </thead>
               <tbody>
                 {requests.map((req) => (
                   <tr key={req._id} className="border-b hover:bg-gray-50">
+                    {/* Request Type */}
                     <td className="p-2">{req.type}</td>
-                    <td className="p-2">{new Date(req.startDate).toLocaleDateString()}</td>
-                    <td className="p-2">{new Date(req.endDate).toLocaleDateString()}</td>
-                    <td className="p-2">{req.numberOfDays}</td>
-                    {role === "Admin" && <td className="p-2">{req.employeeName || "N/A"}</td>}
+
+                    {/* Dates */}
                     <td className="p-2">
-                      {req.status === "Pending" && <span className="text-yellow-600">Pending</span>}
+                      {req.startDate ? new Date(req.startDate).toLocaleDateString() : "—"}
+                    </td>
+                    <td className="p-2">
+                      {req.endDate ? new Date(req.endDate).toLocaleDateString() : "—"}
+                    </td>
+
+                    {/* Number of Days */}
+                    <td className="p-2">{req.numberOfDays ?? "—"}</td>
+
+                    {/* Employee Name */}
+                    {(role === "admin" || role === "manager") && (
+                      <td className="p-2">{req.employeeName || "Unknown"}</td>
+                    )}
+
+                    {/* Status */}
+                    <td className="p-2">
+                      {req.status === "Pending" && (
+                        <span className="text-yellow-600">Pending</span>
+                      )}
                       {req.status === "Approved" && (
                         <span className="text-green-600 flex items-center gap-1">
                           <Check className="w-4 h-4" /> Approved
@@ -217,20 +291,44 @@ export default function TimeOffPage() {
                         </span>
                       )}
                     </td>
+
+                    {/* Approver info */}
+                    <td className="p-2">{req.approvedBy || "Not processed yet"}</td>
+
+                    {/* Actions */}
+                    {(role === "admin" ||
+                      (role === "manager" && req.scope === "department")) &&
+                      req.status === "Pending" && (
+                        <td className="p-2 flex gap-2">
+                          <button
+                            onClick={() => handleApproveReject(req._id, "approve")}
+                            className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleApproveReject(req._id, "reject")}
+                            className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                          >
+                            Reject
+                          </button>
+                        </td>
+                      )}
                   </tr>
                 ))}
               </tbody>
+
+
             </table>
           )}
         </div>
       </div>
 
-      {/* 🔹 NEW REQUEST MODAL */}
-      {showRequestModal && role !== "Admin" && (
+      {/* Modal */}
+      {showRequestModal && role !== "admin" && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">New Time Off Request</h2>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Type</label>
               <select
@@ -243,7 +341,6 @@ export default function TimeOffPage() {
                 <option value="Sick">Sick</option>
               </select>
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Start & End Date</label>
               <DatePicker
@@ -256,9 +353,9 @@ export default function TimeOffPage() {
                 }}
                 className="w-full border p-2 rounded"
                 placeholderText="Select date range"
+                minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)}
               />
             </div>
-
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowRequestModal(false)}

@@ -118,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={totalEmployees} itemsPerPage={itemsPerPage} onPageChange={onPageChange} />
             <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
 
-            {/* PLUS BUTTON (desktop) */}
+          {/*}
             {role === 'admin' && (
               <button
                 onClick={() => setShowAddModal(true)}
@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 <Plus className="w-4 h-4" />
                 <span className="hidden lg:inline text-sm">Add</span>
               </button>
-            )}
+            )}*/}
           </div>
         </div>
 
