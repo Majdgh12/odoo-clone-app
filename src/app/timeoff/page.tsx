@@ -23,6 +23,7 @@ interface TimeOffRequest {
   employeeName?: string;
   approvedBy?: string;
   employeeId?: string;
+  duration?: string;
   scope?: "own" | "department"; // 👈 for managers
 }
 
@@ -34,6 +35,7 @@ export default function TimeOffPage() {
   const [balance, setBalance] = useState<TimeOffBalance>({ paid: 0, compensatory: 0 });
   const [requests, setRequests] = useState<TimeOffRequest[]>([]);
   const [loading, setLoading] = useState(false);
+  const [duration, setDuration] = useState("Full Day");
 
   // Modal states
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -110,6 +112,7 @@ export default function TimeOffPage() {
         start_date: startDate,
         end_date: endDate,
         type,
+        duration,
       });
       setShowRequestModal(false);
       setStartDate(null);
@@ -182,39 +185,35 @@ export default function TimeOffPage() {
         {/* Calendar */}
         <div className="bg-white rounded-lg shadow p-4 border">
           <h2 className="text-xl font-bold mb-4">Calendar</h2>
-          <div className="grid grid-cols-3 gap-6">
-    {Array.from({ length: 12 }).map((_, i) => {
-      const monthDate = new Date();
-      monthDate.setMonth(monthDate.getMonth() + i); // shift by i months
 
-      return (
-        <DatePicker
-          key={i}
-          selected={startDate}
-          onChange={(date: Date | null) => {
-            if (!date) return;
-            if (!startDate) {
-              setStartDate(date);
-            } else {
-              setEndDate(date);
-              setShowRequestModal(true);
-            }
-          }}
-          inline
-          minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)}
-          openToDate={monthDate} // 👈 start from current month
-          showMonthYearPicker={false} // show full days, not just picker
-          calendarClassName="rounded-lg border shadow-sm"
-        />
-      );
-    })}
-  </div>
+          <DatePicker
+            selectsRange
+            startDate={startDate}
+            endDate={endDate}
+            onChange={(update: [Date | null, Date | null]) => {
+              setStartDate(update[0]);
+              setEndDate(update[1]);
+              if (update[0] && update[1]) setShowRequestModal(true);
+            }}
+            inline
+            monthsShown={12}                                // show 12 months at once
+            minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)} // no past days
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            calendarClassName="grid grid-cols-3 gap-8"       // 👈 arrange 3 columns × 4 rows
+            openToDate={new Date()}                          // start from current month
+          />
+
           {startDate && endDate && (
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 mt-2">
               Selected: {formatDate(startDate)} → {formatDate(endDate)}
             </div>
           )}
         </div>
+
+
+
 
         {/* Requests table */}
         <div className="bg-white rounded-lg shadow p-4 border">
@@ -247,6 +246,7 @@ export default function TimeOffPage() {
                   <th className="p-2">Start</th>
                   <th className="p-2">End</th>
                   <th className="p-2">Days</th>
+                  <th className="p-2">Duration</th>
                   {(role === "admin" || role === "manager") && <th className="p-2">Employee</th>}
                   <th className="p-2">Status</th>
                   <th className="p-2">Approved By</th>
@@ -269,7 +269,7 @@ export default function TimeOffPage() {
 
                     {/* Number of Days */}
                     <td className="p-2">{req.numberOfDays ?? "—"}</td>
-
+                    <td className="p-2">{req.duration || "Full Day"}</td>
                     {/* Employee Name */}
                     {(role === "admin" || role === "manager") && (
                       <td className="p-2">{req.employeeName || "Unknown"}</td>
@@ -339,23 +339,58 @@ export default function TimeOffPage() {
                 <option value="Paid">Paid</option>
                 <option value="Compensatory">Compensatory</option>
                 <option value="Sick">Sick</option>
+                <option value="Remote">Remote</option>
               </select>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Start & End Date</label>
-              <DatePicker
-                selectsRange
-                startDate={startDate}
-                endDate={endDate}
-                onChange={(update: [Date | null, Date | null]) => {
-                  setStartDate(update[0]);
-                  setEndDate(update[1]);
-                }}
+              <label className="block text-sm font-medium mb-1">Duration</label>
+              <select
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
                 className="w-full border p-2 rounded"
-                placeholderText="Select date range"
-                minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)}
-              />
+              >
+                <option value="Full Day">Full Day</option>
+                <option value="Half Day">Half Day</option>
+              </select>
             </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                {duration === "Half Day" ? "Date" : "Start & End Date"}
+              </label>
+
+              {duration === "Full Day" ? (
+                <DatePicker
+                  key="full-day"
+                  selectsRange   // ✅ literal true, no TS error
+                  startDate={startDate}
+                  endDate={endDate}
+                  onChange={(value: [Date | null, Date | null]) => {
+                    const [s, e] = value;
+                    setStartDate(s);
+                    setEndDate(e);
+                  }}
+                  className="w-full border p-2 rounded"
+                  placeholderText="Select date range"
+                  minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)}
+                />
+              ) : (
+                <DatePicker
+                  key="half-day"
+                  selected={startDate}
+                  onChange={(date: Date | null) => {
+                    setStartDate(date);
+                    setEndDate(date); // both same for half day
+                  }}
+                  className="w-full border p-2 rounded"
+                  placeholderText="Select a date"
+                  minDate={new Date(Date.now() + 48 * 60 * 60 * 1000)}
+                />
+              )}
+            </div>
+
+
+
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowRequestModal(false)}
