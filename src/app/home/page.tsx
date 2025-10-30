@@ -14,6 +14,7 @@ const apps: AppItem[] = [
   { name: "Project", icon: "/Images/project.png", link: "/project" },
   { name: "Employees", icon: "/Images/employee.png", link: "/homeEmployee" },
   { name: "Time Off", icon: "/Images/timeoff.jpg", link: "/timeoff" },
+  { name: "Timesheet", icon: "/Images/timesheet.jpg", link: "/timesheet" }, // ✅ added here
 ];
 
 export default function HomePage() {
@@ -34,8 +35,6 @@ export default function HomePage() {
                 width={80}
                 height={80}
                 className="rounded-lg"
-                onError={() => console.error(`Image not found: ${app.icon}`)}
-                onLoadingComplete={() => console.log(`Loaded: ${app.icon}`)}
               />
             </div>
             <p className="text-base text-gray-700 font-semibold group-hover:text-purple-700">
