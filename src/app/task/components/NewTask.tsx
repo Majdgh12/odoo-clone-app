@@ -144,7 +144,7 @@ const NewTask: React.FC<NewTaskProps> = ({
       return;
     }
     const userRole = session.user.role || 'employee';
-    if (!['manager', 'teamlead'].includes(userRole)) {
+    if (!['manager', 'teamlead', 'admin'].includes(userRole)) {
       alert('You do not have permission to create tasks.');
       return;
     }
