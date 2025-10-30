@@ -101,7 +101,7 @@ const NavbarTask: React.FC<NavbarTaskProps> = ({
             <ViewTypeSelector onViewTypeChange={onViewTypeChange} />
 
             {/* ✨ EDIT: Show "+ New Task" only if role is teamlead */}
-            {role === "team_lead" && (
+            {role === "team_lead" || role === "admin" && (
               <button
                 onClick={() => (onNewClick ? onNewClick() : setShowAddTaskModal(true))}
                 className="bg-[#65435c] text-white px-3 py-1 rounded text-sm font-medium hover:bg-[#55394e]"
