@@ -4,6 +4,9 @@ import axios from "axios";
 import { Play, Square } from "lucide-react";
 import { format } from "date-fns";
 import NewTask from "@/app/task/components/NewTask";
+import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
+
 
 interface Project {
   _id: string;
@@ -39,8 +42,18 @@ interface TimesheetHeaderProps {
   timesheets?: any[];
   showSelectors: boolean;
   setShowSelectors: (v: boolean) => void;
-
+  onEnsureRow?: (projectId: string, taskId?: string | null) => Promise<void>;
 }
+interface NewTaskProps {
+  onClose: () => void;
+  onSave: (task: any) => void;
+  defaultProjectId?: string;
+  departmentId?: string;
+  mode?: string;         
+  employeeId?: string;    
+}
+
+
 
 export default function TimesheetHeader({
   onStart,
@@ -53,8 +66,6 @@ export default function TimesheetHeader({
   onToday,
   view,
   setView,
-  role,
-  employeeId,
   departmentId,
   activeProject,
   activeTask,
@@ -65,7 +76,12 @@ export default function TimesheetHeader({
   timesheets,
   showSelectors,
   setShowSelectors,
+  onEnsureRow,
 }: TimesheetHeaderProps) {
+  const { data: session, status } = useSession();
+  const employeeId = (session?.user as any)?.employeeId;
+  const role = (session?.user as any)?.role;
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedProject, setSelectedProject] = useState("");
@@ -78,23 +94,30 @@ export default function TimesheetHeader({
     setSelectedTask(activeTask || "");
   }, [activeProject, activeTask]);
 
+  
   // 🧩 derive unique projects from timesheets
+
 useEffect(() => {
   if (!timesheets?.length) {
     setProjects([]);
     return;
   }
 
+  // 🧩 derive unique projects
   const uniqueProjects = Array.from(
     new Map(
       timesheets.map((t, idx) => {
         let proj: any;
-
-        // 🧩 handle grouped response (has project_name)
         if (t.project_id && typeof t.project_id === "object") {
           proj = t.project_id;
-        } else if (typeof t.project_id === "string" && /^[0-9a-fA-F]{24}$/.test(t.project_id)) {
-          proj = { _id: t.project_id, name: t.project_name || t.project || "Unnamed Project" };
+        } else if (
+          typeof t.project_id === "string" &&
+          /^[0-9a-fA-F]{24}$/.test(t.project_id)
+        ) {
+          proj = {
+            _id: t.project_id,
+            name: t.project_name || t.project || "Unnamed Project",
+          };
         } else if (t.project_name) {
           proj = { _id: `fake-${idx}`, name: t.project_name };
         } else if (t.project) {
@@ -102,7 +125,6 @@ useEffect(() => {
         } else {
           proj = { _id: `unknown-${idx}`, name: "Unnamed Project" };
         }
-
         return [proj._id, proj];
       })
     ).values()
@@ -110,6 +132,7 @@ useEffect(() => {
 
   setProjects(uniqueProjects);
 }, [timesheets]);
+
 
 
   // 🧩 fetch tasks
@@ -196,58 +219,70 @@ const handlePauseClick = async () => {
     </div>
 
     {/* Middle: Project & Task selectors */}
-    {showSelectors && (
-      <div className="flex items-center gap-3 transition-all duration-200">
-        {/* Project dropdown */}
-        <select
-          className="border border-gray-300 rounded-md px-2.5 py-1.5 text-[13px] text-gray-800 focus:ring-1 focus:ring-[#65435c] focus:border-[#65435c] min-w-[160px]"
-          value={selectedProject}
-          onChange={(e) => {
-            const newProj = e.target.value;
-            setSelectedProject(newProj);
-            setSelectedTask("");
-            if (isRunning && onSwitchContext) onSwitchContext(newProj, "");
-          }}
-        >
-          <option value="">Select Project</option>
-          {projects.map((p) => (
-            <option key={p._id} value={p._id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+{showSelectors && (
+  <div className="flex items-center gap-3 transition-all duration-200">
+    {/* Project dropdown */}
+    <select
+      className="border border-gray-300 rounded-md px-2.5 py-1.5 text-[13px] text-gray-800 focus:ring-1 focus:ring-[#65435c] focus:border-[#65435c] min-w-[160px]"
+      value={selectedProject}
+      onChange={async (e) => {
+        const newProj = e.target.value;
+        setSelectedProject(newProj);
+        setSelectedTask("");
 
-        {/* Task dropdown */}
-<div className="relative">
-  <select
-    className="border border-gray-300 rounded-md px-2.5 py-1.5 text-[13px] text-gray-800 focus:ring-1 focus:ring-[#65435c] focus:border-[#65435c] min-w-[180px] appearance-none"
-    value={selectedTask}
-    onChange={(e) => {
-      if (e.target.value === "__new__") {
-        // 🆕 open modal
-        setShowNewTaskModal(true);
-        return;
-      }
-      const newTask = e.target.value;
-      setSelectedTask(newTask);
-      if (isRunning && onSwitchContext)
-        onSwitchContext(selectedProject, newTask);
-    }}
-    disabled={!selectedProject}
-  >
-    <option value="">Select Task</option>
-    {tasks.map((t) => (
-      <option key={t._id} value={t._id}>
-        {t.title || t.name}
-      </option>
-    ))}
-    {/* 🆕 Add option at bottom */}
-    {selectedProject && <option value="__new__">➕ Add New Task</option>}
-  </select>
-</div>
+        if (isRunning && onSwitchContext) {
+          // timer running → switch context only
+          onSwitchContext(newProj, "");
+        } else if (onEnsureRow && newProj) {
+          // timer NOT running → ensure a plain project row exists
+          await onEnsureRow(newProj, null);
+        }
+      }}
+    >
+      <option value="">Select Project</option>
+      {projects.map((p) => (
+        <option key={p._id} value={p._id}>
+          {p.name}
+        </option>
+      ))}
+    </select>
 
-      </div>
-    )}
+    {/* Task dropdown */}
+    <div className="relative">
+      <select
+        className="border border-gray-300 rounded-md px-2.5 py-1.5 text-[13px] text-gray-800 focus:ring-1 focus:ring-[#65435c] focus:border-[#65435c] min-w-[180px] appearance-none"
+        value={selectedTask}
+        onChange={async (e) => {
+          if (e.target.value === "__new__") {
+            setShowNewTaskModal(true);
+            return;
+          }
+
+          const newTask = e.target.value;
+          setSelectedTask(newTask);
+
+          if (isRunning && onSwitchContext) {
+            // running → switch timer context
+            onSwitchContext(selectedProject, newTask);
+          } else if (onEnsureRow && selectedProject && newTask) {
+            // not running → ensure "project | task" row exists
+            await onEnsureRow(selectedProject, newTask);
+          }
+        }}
+        disabled={!selectedProject}
+      >
+        <option value="">Select Task</option>
+        {tasks.map((t) => (
+          <option key={t._id} value={t._id}>
+            {t.title || t.name}
+          </option>
+        ))}
+        {selectedProject && <option value="__new__">➕ Add New Task</option>}
+      </select>
+    </div>
+  </div>
+)}
+
 
     {/* Right: Date Controls */}
     <div className="flex items-center gap-2 text-[13px]">
@@ -287,23 +322,50 @@ const handlePauseClick = async () => {
     </div>
     {/* 🆕 New Task Modal */}
 {showNewTaskModal && (
-  <NewTask
-    defaultProjectId={selectedProject}
-    departmentId={departmentId}
-    onClose={() => setShowNewTaskModal(false)}
-    onSave={(newTask) => {
-      // when user creates new task, refresh dropdown
-      setTasks((prev) => [...prev, newTask]);
-      setSelectedTask(newTask._id);
+<NewTask
+  defaultProjectId={selectedProject}
+  departmentId={departmentId}
+  mode="timesheet"
+  onClose={() => setShowNewTaskModal(false)}
+  onSave={async (newTask) => {
+    const token = (session as any)?.accessToken;
 
-      // notify timer
-      if (isRunning && onSwitchContext)
-        onSwitchContext(selectedProject, newTask._id);
+    try {
+      // 🧩 STEP 1: Assign the logged-in employee to the created task
+      const updated = await axios.put(
+        `http://localhost:5000/api/tasks/${newTask._id}`,
+        { assignee: employeeId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      // 🧩 STEP 2: Update UI (dropdown + select)
+      const task = updated.data.data || updated.data || newTask;
+
+      setTasks((prev) => [...prev, task]);
+      setSelectedTask(task._id);
+
+      // 🧩 STEP 3: Sync with timer context if active
+      if (isRunning && onSwitchContext) {
+        onSwitchContext(selectedProject, task._id);
+      }
+
+      toast.success("✅ Task assigned to you automatically!");
+    } catch (err) {
+      console.error("❌ Error assigning task:", err);
+      toast.error("Failed to assign task to you.");
+    } finally {
       setShowNewTaskModal(false);
-    }}
-  />
+    }
+  }}
+/>
+
 )}
+
 
   </div>
   

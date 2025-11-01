@@ -245,6 +245,7 @@ useEffect(() => {
       timerRef.current = null;
     }
   }
+  
 
   // Cleanup when unmounting
   return () => {
@@ -268,6 +269,128 @@ useEffect(() => {
     else if (view === "week") setCurrentDate((prev) => addWeeks(prev, 1));
     else setCurrentDate((prev) => addMonths(prev, 1));
   };
+  // below other functions
+const getId = (val: any) =>
+  typeof val === "object" && val?._id ? val._id : typeof val === "string" ? val : null;
+
+// ensure there is a row for this project/task for the current user/period
+const ensureTimesheetRow = async (projectId: string, taskId?: string | null) => {
+  if (!projectId) return;
+
+  // already exists?
+  const exists = timesheets.some((t: any) => {
+    const pid = getId(t.project_id) || t.project;   // tolerate grouped shape
+    const tid = getId(t.task_id) || t.task || null;
+    return pid === projectId && (tid || null) === (taskId || null);
+  });
+  if (exists) return;
+
+  // create empty row with 0 duration for current date bucket
+  await axios.post("http://localhost:5000/api/timesheets", {
+    employee_id: employeeId,
+    project_id: projectId,
+    task_id: taskId || null,
+    duration: 0,
+    date: currentDate,          // use whichever date the grid is showing
+  });
+
+  await fetchTimesheets();      // refresh grid so the new row shows up
+};
+
+// 🧠 Safe helper
+const safeId = (val: any) =>
+  val && typeof val === "object" ? val._id : val || null;
+
+// 🔄 switch the current running timer context to a new project/task
+// 🔄 switch the current running timer context to a new project/task
+const switchTimerContext = async (newProjectId: string, newTaskId?: string | null) => {
+  if (!isRunning || !activeSheet) return;
+
+  console.log("🔄 Switching context to:", newProjectId, newTaskId);
+
+  const now = new Date();
+
+  // 1️⃣ Compute how long user spent on the previous project before switching
+  const startTime = new Date(activeSheet.startedAt || activeSheet.switchedAt || now);
+  const diffMs = now.getTime() - startTime.getTime();
+  let diffHours = +(diffMs / 3600000).toFixed(4);
+  if (diffHours <= 0) diffHours = 0.01;
+
+  // 2️⃣ Save that duration for the old active sheet
+  try {
+    const payload = {
+      employee_id: employeeId,
+      project_id: activeSheet.project_id,
+      task_id: activeSheet.task_id,
+      duration: diffHours,
+      date: now,
+    };
+
+    if (activeSheet._id && !activeSheet._id.startsWith("temp")) {
+      await axios.put(`http://localhost:5000/api/timesheets/${activeSheet._id}`, payload);
+    } else {
+      await axios.post(`http://localhost:5000/api/timesheets`, payload);
+    }
+    toast.success("Timer switched to new project/task!");
+
+    console.log(`✅ Saved ${diffHours.toFixed(2)}h for previous sheet`);
+  } catch (err) {
+    console.warn("⚠️ Couldn’t save old timesheet during switch:", err);
+  }
+
+  // 3️⃣ Keep elapsed time — don’t reset timer
+  previousElapsedRef.current = elapsed;
+
+  // 4️⃣ Find or create target sheet
+  const exists = timesheets.some((t) => {
+    const pid = safeId(t.project_id) || t.project;
+    const tid = safeId(t.task_id) || t.task || null;
+    return pid === newProjectId && (tid || null) === (newTaskId || null);
+  });
+
+  if (!exists) {
+    const projectName =
+      projects.find((p) => p._id === newProjectId)?.name ||
+      timesheets.find((t) => getId(t.project_id) === newProjectId)?.project_name ||
+      "Unnamed Project";
+
+    const taskTitle =
+      timesheets.find((t) => getId(t.task_id) === newTaskId)?.task_title ||
+      "New Task";
+
+    const newRow = {
+      _id: `temp-${Date.now()}`,
+      project_id: { _id: newProjectId, name: projectName },
+      task_id: newTaskId ? { _id: newTaskId, title: taskTitle } : null,
+      entries: {},
+      total: 0,
+    };
+
+    setTimesheets((prev) => [...prev, newRow]);
+  }
+
+  // 5️⃣ Switch the active sheet reference
+
+  setActiveSheet({
+    project_id: newProjectId,
+    task_id: newTaskId,
+    startedAt: now.toISOString(), // new starting point for diff next time
+  });
+
+  setRunningSheetId(`temp-${newProjectId}-${newTaskId}||"none"`);
+
+  // 6️⃣ Continue timer tick
+  if (!timerRef.current) {
+    timerRef.current = setInterval(() => {
+      setElapsed((prev) => prev + 1);
+    }, 1000);
+  }
+
+  console.log("⏱ Timer continues on new context, no reset!");
+};
+
+
+
 
   return (
     <div className="pt-24 px-6 max-w-6xl mx-auto space-y-6">
@@ -290,21 +413,13 @@ useEffect(() => {
   activeTask={selectedTask}
   onProjectChange={setSelectedProject}
   onTaskChange={setSelectedTask}
-  onSwitchContext={async (newProjectId, newTaskId) => {
-    if (!isRunning) return;
-    await handlePause();
-    setActiveSheet({
-      project_id: newProjectId,
-      task_id: newTaskId,
-      switchedAt: new Date().toISOString,
-    });
-    setSelectedProject(newProjectId);
-    setSelectedTask(newTaskId);
-  }}
   onProjectsLoaded={setProjects}
   timesheets={timesheets} 
   showSelectors={showSelectors}            // 👈 ADD THIS
   setShowSelectors={setShowSelectors}
+  onEnsureRow={ensureTimesheetRow}
+  onSwitchContext={switchTimerContext}
+  
 />
 
 
@@ -317,7 +432,7 @@ useEffect(() => {
           onAddLine={() => setShowForm(true)}
           isRunning={isRunning}
           runningSheetId={runningSheetId}
-
+          activeSheet={activeSheet}
         />
       )}
 
