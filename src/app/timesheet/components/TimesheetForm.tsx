@@ -24,7 +24,8 @@ const TimesheetForm: React.FC<TimesheetFormProps> = ({
   onTimesheetCreated,
   onClose,
 }) => {
-  const { data: session } = useSession();
+  const { data: session,status } = useSession();
+  const departmentId=(session.user as any)?.departmentId;
   const [projects, setProjects] = useState<any[]>([]);
   const [formData, setFormData] = useState<TimesheetFormData>({
     project_id: "",
@@ -35,6 +36,8 @@ const TimesheetForm: React.FC<TimesheetFormProps> = ({
 
   // 🧠 Fetch available projects
   useEffect(() => {
+    if (status!=="authenticated") return;
+    if (!role || !employeeId || !departmentId) return;
     fetchProjects();
   }, []);
 
@@ -44,9 +47,11 @@ const TimesheetForm: React.FC<TimesheetFormProps> = ({
         params: {
           role,
           employee_id: employeeId,
-          department_id: (session?.user as any)?.departmentId,
+          department_id: departmentId,
+          
         },
       });
+      console.log("📡 Fetching projects with:", { role, employeeId, departmentId });
 
       setProjects(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (err) {
